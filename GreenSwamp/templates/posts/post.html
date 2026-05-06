@@ -1,0 +1,91 @@
+{{define "post.html"}}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-900">
+  <div class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-4">
+    <aside class="lg:col-span-1">
+      <div class="sticky top-6 rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 font-bold text-emerald-700">G</div>
+          <div>
+            <div class="font-semibold">Greenswamp</div>
+            <div class="text-sm text-slate-500">Post details</div>
+          </div>
+        </div>
+        <a href="{{.BasePath}}/feed" class="mt-5 inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Back to feed</a>
+      </div>
+    </aside>
+
+    <main class="lg:col-span-2">
+      <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex gap-4">
+          <img src="{{avatar .Item.User.AvatarURL}}" alt="{{.Item.User.DisplayName}}" class="h-14 w-14 rounded-2xl object-cover">
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <a href="{{.BasePath}}/profile/{{.Item.User.Username}}" class="font-semibold hover:underline">{{.Item.User.DisplayName}}</a>
+              <a href="{{.BasePath}}/profile/{{.Item.User.Username}}" class="text-sm text-slate-500">@{{.Item.User.Username}}</a>
+              <span class="text-slate-400">·</span>
+              <span class="text-sm text-slate-500">{{.Item.TimeLabel}}</span>
+            </div>
+
+            {{if .Item.IsEvent}}
+            <div class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+              <div class="text-sm font-semibold text-emerald-900">Event</div>
+              <div class="mt-1 text-sm text-emerald-800">{{.Item.EventTimeLabel}} · {{.Item.Event.Location}}</div>
+              {{if .Item.Event.HostOrg}}<div class="text-sm text-emerald-700">Hosted by {{.Item.Event.HostOrg}}</div>{{end}}
+            </div>
+            {{end}}
+
+            <div class="mt-4 whitespace-pre-wrap text-lg leading-8 text-slate-800">{{.Item.ContentHTML}}</div>
+
+            {{if .Item.MediaURL}}
+            <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+              {{if eq .Item.MediaType "image"}}
+                <img src="{{.Item.MediaURL}}" alt="{{if .Item.AltText}}{{.Item.AltText}}{{else}}{{.Item.Content}}{{end}}" class="w-full max-h-[640px] object-cover">
+              {{else if eq .Item.MediaType "video"}}
+                <video controls class="w-full max-h-[640px] bg-black">
+                  <source src="{{.Item.MediaURL}}">
+                </video>
+              {{end}}
+            </div>
+            {{end}}
+
+            <div class="mt-5 flex flex-wrap items-center gap-4 text-sm text-slate-500">
+              <span>{{.Item.InteractionCount}} interactions</span>
+              <span>{{.Item.ViewCount}} views</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </main>
+
+    <aside class="lg:col-span-1">
+      <div class="sticky top-6 rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+        <div class="font-semibold">Trending topics</div>
+        {{if .Trending}}
+        <div class="mt-4 space-y-3">
+          {{range .Trending}}
+          <a href="{{.URL}}" class="flex items-center justify-between gap-3 rounded-2xl px-3 py-2 hover:bg-slate-50">
+            <div>
+              <div class="font-medium text-slate-900">#{{.TagName}}</div>
+              <div class="text-sm text-slate-500">{{.RecentPosts}} recent posts</div>
+            </div>
+            <span class="text-emerald-700">→</span>
+          </a>
+          {{end}}
+        </div>
+        {{else}}
+        <div class="mt-3 text-sm text-slate-500">No trending topics yet.</div>
+        {{end}}
+      </div>
+    </aside>
+  </div>
+</body>
+</html>
+{{end}}

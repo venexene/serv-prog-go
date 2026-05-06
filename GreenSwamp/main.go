@@ -10,17 +10,33 @@ import (
 	"time"
 
 	internal "github.com/venexene/serv-prog-go/greenswamp/internal"
+	"github.com/venexene/serv-prog-go/greenswamp/posts"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func main() {
 	cfg := internal.LoadConfig()
-
 	logger := log.New(os.Stdout, "[greenswamp] ", log.LstdFlags)
+
+	db, err := gorm.Open(sqlite.Open("data/greenswamp.db"), &gorm.Config{})
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	if err := posts.AutoMigrate(db); err != nil {
+		logger.Fatal(err)
+	}
 
 	app := internal.CreateApp(cfg, logger)
 
 	mux := http.NewServeMux()
 	app.Routes(mux)
+
+	posts.RegisterRoutes(mux, db, logger, posts.Config{
+		BasePath:     "/posts",
+		TemplatesDir: "templates/posts",
+	})
 
 	handler := app.WithMiddleware(mux)
 
