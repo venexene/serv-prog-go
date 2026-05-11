@@ -2,154 +2,187 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{.Title}}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            swamp: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-900">
-  <div class="mx-auto max-w-7xl px-4 py-6">
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-4">
-      <aside class="lg:col-span-1">
-        <div class="sticky top-6 space-y-4">
-          <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
-            <div class="flex items-center gap-3">
-              <img src="{{.Profile.Avatar}}" alt="{{.Profile.User.DisplayName}}" class="h-14 w-14 rounded-2xl object-cover">
-              <div class="min-w-0">
-                <div class="font-semibold text-lg leading-tight">{{.Profile.User.DisplayName}}</div>
-                <div class="text-sm text-slate-500">@{{.Profile.User.Username}}</div>
-              </div>
+<body class="bg-slate-100 text-slate-900">
+  <div class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-4">
+    <aside class="space-y-4 lg:col-span-1">
+      <div class="sticky top-6 space-y-4">
+        {{if .CurrentUser}}
+        <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+          <div class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 font-bold text-emerald-700">U</div>
+            <div class="min-w-0">
+              <div class="font-semibold text-lg leading-tight">{{.CurrentUser.DisplayName}}</div>
+              <div class="text-sm text-slate-500">@{{.CurrentUser.Username}}</div>
             </div>
-
-            <div class="mt-4 flex flex-wrap gap-2">
-              {{if .Profile.User.IsActive}}
-              <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Active</span>
-              {{else}}
-              <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">Inactive</span>
-              {{end}}
-              <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{{.Profile.PostCount}} posts</span>
-            </div>
-
-            <div class="mt-4 text-sm text-slate-500">
-              Joined {{formatTime .Profile.User.CreatedAt}}
-            </div>
-
-            <a href="{{.BasePath}}/feed" class="mt-5 inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Back to feed</a>
           </div>
 
-          <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
-            <div class="font-semibold">Bio</div>
-            <p class="mt-3 whitespace-pre-line text-sm leading-6 text-slate-600">
-              {{if .Profile.Bio}}{{.Profile.Bio}}{{else}}No bio yet.{{end}}
-            </p>
+          <div class="mt-4 rounded-2xl bg-emerald-50 p-4">
+            <div class="text-sm font-medium text-emerald-900">Signed in</div>
+            <div class="mt-1 text-sm text-emerald-800">You can move around the site as an authenticated user.</div>
+          </div>
+
+          <div class="mt-4 space-y-2">
+            <a href="{{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Back to feed</a>
+            <a href="/logout?next={{.BasePath}}/profile/{{.Profile.User.Username}}" class="inline-flex w-full justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Logout</a>
           </div>
         </div>
-      </aside>
-
-      <main class="lg:col-span-2 space-y-4">
-        <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div class="text-sm font-medium text-emerald-700">Profile overview</div>
-          <h1 class="mt-1 text-3xl font-bold tracking-tight">{{.Profile.User.DisplayName}}</h1>
-          <p class="mt-2 text-slate-600">@{{.Profile.User.Username}}</p>
-
-          <div class="mt-5 grid grid-cols-3 gap-3 text-sm">
-            <div class="rounded-2xl bg-slate-50 p-4">
-              <div class="text-slate-500">Posts</div>
-              <div class="mt-1 text-xl font-bold">{{.Profile.PostCount}}</div>
-            </div>
-            <div class="rounded-2xl bg-slate-50 p-4">
-              <div class="text-slate-500">Status</div>
-              <div class="mt-1 text-xl font-bold">{{if .Profile.User.IsActive}}Live{{else}}Off{{end}}</div>
-            </div>
-            <div class="rounded-2xl bg-slate-50 p-4">
-              <div class="text-slate-500">Member since</div>
-              <div class="mt-1 text-xl font-bold">{{formatTime .Profile.User.CreatedAt}}</div>
+        {{else}}
+        <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+          <div class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 font-bold text-slate-700">G</div>
+            <div class="min-w-0">
+              <div class="font-semibold text-lg leading-tight">Guest</div>
+              <div class="text-sm text-slate-500">Not signed in</div>
             </div>
           </div>
-        </section>
 
-        <section class="space-y-4">
-          {{range .Profile.Posts}}
-          <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div class="flex gap-4">
-              <img src="{{avatar .User.AvatarURL}}" alt="{{.User.DisplayName}}" class="h-12 w-12 rounded-2xl object-cover">
-              <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="font-semibold hover:underline">{{.User.DisplayName}}</a>
-                  <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="text-sm text-slate-500">@{{.User.Username}}</a>
-                  <span class="text-slate-400">·</span>
-                  <a href="{{$.BasePath}}/feed/post/{{.PostID}}" class="text-sm text-slate-500 hover:underline">{{.TimeLabel}}</a>
-                </div>
+          <p class="mt-4 text-sm leading-6 text-slate-600">
+            Войдите, чтобы использовать личные действия и быстрый возврат после выхода.
+          </p>
 
-                <div class="mt-3 whitespace-pre-wrap leading-7 text-slate-800">{{.ContentHTML}}</div>
-
-                {{if .MediaURL}}
-                <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-                  {{if eq .PostType "image"}}
-                    <img class="w-full max-h-[520px] object-cover" src="{{.MediaURL}}" alt="{{if .AltText}}{{.AltText}}{{else}}{{.Content}}{{end}}">
-                  {{else if eq .PostType "video"}}
-                    <video class="w-full aspect-video bg-black" controls preload="metadata" {{if .ThumbnailURL}}poster="{{.ThumbnailURL}}"{{end}}>
-                      <source src="{{.MediaURL}}" type="video/mp4">
-                      Your browser does not support the video tag.
-                    </video>
-                  {{end}}
-                </div>
-                {{end}}
-
-                {{if .IsEvent}}
-                <div class="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-                  <div class="text-sm font-semibold text-emerald-900">Event</div>
-                  <div class="mt-1 text-sm text-emerald-800">{{.EventTimeLabel}} · {{.Event.Location}}</div>
-                  {{if .Event.HostOrg}}<div class="text-sm text-emerald-700">Hosted by {{.Event.HostOrg}}</div>{{end}}
-                </div>
-                {{end}}
-
-                <div class="mt-4 flex flex-wrap items-center gap-4 text-sm text-slate-500">
-                  <a href="{{$.BasePath}}/feed/post/{{.PostID}}" class="font-medium text-emerald-700 hover:text-emerald-800">{{.ViewCount}} views</a>
-                  <span>{{.InteractionCount}} interactions</span>
-                </div>
-              </div>
-            </div>
-          </article>
-          {{else}}
-          <div class="rounded-3xl border border-slate-200 bg-white p-10 text-center text-slate-500 shadow-sm">
-            No posts yet.
+          <div class="mt-4 space-y-2">
+            <a href="/login?next={{.BasePath}}/profile/{{.Profile.User.Username}}" class="inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Login</a>
+            <a href="/register?next={{.BasePath}}/profile/{{.Profile.User.Username}}" class="inline-flex w-full justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Register</a>
           </div>
-          {{end}}
-        </section>
-      </main>
+        </div>
+        {{end}}
 
-      <aside class="lg:col-span-1">
-        <div class="sticky top-6 space-y-4">
-          <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
-            <div class="font-semibold">Trending topics</div>
-            {{if .Trending}}
-            <div class="mt-4 space-y-3">
-              {{range .Trending}}
-              <a href="{{.URL}}" class="flex items-center justify-between gap-3 rounded-2xl px-3 py-2 hover:bg-slate-50">
-                <div>
-                  <div class="font-medium text-slate-900">#{{.TagName}}</div>
-                  <div class="text-sm text-slate-500">{{.RecentPosts}} recent posts</div>
-                </div>
-                <span class="text-emerald-700">→</span>
-              </a>
-              {{end}}
+        <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+          <div class="flex items-center gap-3">
+            <img src="{{.Profile.Avatar}}" alt="{{.Profile.User.DisplayName}}" class="h-14 w-14 rounded-2xl object-cover">
+            <div class="min-w-0">
+              <div class="font-semibold text-lg leading-tight">{{.Profile.User.DisplayName}}</div>
+              <div class="text-sm text-slate-500">@{{.Profile.User.Username}}</div>
             </div>
+          </div>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+            {{if .Profile.User.IsActive}}
+            <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Active</span>
             {{else}}
-            <div class="mt-3 text-sm text-slate-500">No trending topics yet.</div>
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">Inactive</span>
             {{end}}
+            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{{.Profile.PostCount}} posts</span>
           </div>
 
-          <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
-            <div class="font-semibold">Navigation</div>
-            <div class="mt-3 space-y-2 text-sm">
-              <a href="{{.BasePath}}/feed" class="block text-emerald-700 hover:text-emerald-800">Open feed</a>
-              <a href="/" class="block text-slate-600 hover:text-slate-900">Landing page</a>
+          <div class="mt-4 text-sm text-slate-500">
+            Joined {{formatTime .Profile.User.CreatedAt}}
+          </div>
+        </div>
+
+        <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+          <div class="font-semibold">Bio</div>
+          <p class="mt-3 whitespace-pre-line text-sm leading-6 text-slate-600">
+            {{if .Profile.Bio}}{{.Profile.Bio}}{{else}}No bio yet.{{end}}
+          </p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="lg:col-span-2">
+      <div class="mb-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 class="text-2xl font-bold">{{.Profile.User.DisplayName}}'s Posts</h2>
+        {{if eq .Profile.PostCount 0}}
+        <p class="mt-4 text-slate-600">No posts yet.</p>
+        {{else}}
+        <p class="mt-2 text-sm text-slate-600">{{.Profile.PostCount}} post{{if ne .Profile.PostCount 1}}s{{end}}</p>
+        {{end}}
+      </div>
+
+      {{range .Profile.Posts}}
+      <article class="mb-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex gap-4">
+          <img src="{{avatar .User.AvatarURL}}" alt="{{.User.DisplayName}}" class="h-14 w-14 rounded-2xl object-cover">
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="font-semibold hover:underline">{{.User.DisplayName}}</a>
+              <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="text-sm text-slate-500">@{{.User.Username}}</a>
+              <span class="text-slate-400">·</span>
+              <span class="text-sm text-slate-500">{{.TimeLabel}}</span>
+            </div>
+
+            {{if .IsEvent}}
+            <div class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+              <div class="text-sm font-semibold text-emerald-900">Event</div>
+              <div class="mt-1 text-sm text-emerald-800">{{.EventTimeLabel}} · {{.Event.Location}}</div>
+              {{if .Event.HostOrg}}<div class="text-sm text-emerald-700">Hosted by {{.Event.HostOrg}}</div>{{end}}
+            </div>
+            {{end}}
+
+            <div class="mt-4 whitespace-pre-wrap text-lg leading-8 text-slate-800">{{.ContentHTML}}</div>
+
+            {{if .MediaURL}}
+            <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+              {{if eq .MediaType "image"}}
+                <img src="{{.MediaURL}}" alt="{{if .AltText}}{{.AltText}}{{else}}{{.Content}}{{end}}" class="w-full max-h-[640px] object-cover">
+              {{else if eq .MediaType "video"}}
+                <video controls class="w-full max-h-[640px]">
+                  <source src="{{.MediaURL}}" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              {{end}}
+            </div>
+            {{end}}
+
+            <div class="mt-4 flex items-center gap-4">
+              <a href="{{.Post}}" class="text-sm text-slate-500 hover:text-slate-700">View details</a>
+              {{if .InteractionCount}}
+              <span class="text-sm text-slate-500">{{.InteractionCount}} interactions</span>
+              {{end}}
             </div>
           </div>
         </div>
-      </aside>
-    </div>
+      </article>
+      {{else}}
+      <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200 text-center">
+        <div class="text-slate-500">No posts from this user.</div>
+      </div>
+      {{end}}
+    </main>
+
+    <aside class="space-y-4 lg:col-span-1">
+      <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+        <div class="font-semibold">Greenswamp</div>
+        <p class="mt-4 text-sm leading-6 text-slate-600">Explore profiles and their posts from the community.</p>
+        <a href="{{.BasePath}}/feed" class="mt-4 inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Back to feed</a>
+      </div>
+
+      <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+        <div class="font-semibold">Trending Tags</div>
+        <div class="mt-3 space-y-2">
+          {{range .Trending}}
+          <a href="{{$.BasePath}}/ponds/{{.TagName}}" class="inline-block rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 hover:bg-slate-200">#{{.TagName}}</a>
+          {{end}}
+        </div>
+      </div>
+    </aside>
   </div>
 </body>
 </html>

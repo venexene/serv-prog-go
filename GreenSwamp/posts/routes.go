@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 
+	account "github.com/venexene/serv-prog-go/greenswamp/account"
 	"gorm.io/gorm"
 )
 
@@ -24,6 +25,7 @@ func RegisterRoutes(mux *http.ServeMux, db *gorm.DB, logger *log.Logger, cfg Con
 
 	ctrl := &Controller{
 		repo:     NewRepository(db),
+		authRepo: account.NewRepository(db),
 		tmpl:     mustTemplates(cfg.TemplatesDir),
 		basePath: cfg.BasePath,
 		logger:   logger,
@@ -33,6 +35,7 @@ func RegisterRoutes(mux *http.ServeMux, db *gorm.DB, logger *log.Logger, cfg Con
 	mux.HandleFunc(cfg.BasePath+"/profile/", ctrl.handleProfile)
 	mux.HandleFunc(cfg.BasePath+"/ponds/", ctrl.handlePond)
 	mux.HandleFunc(cfg.BasePath+"/ponds", ctrl.handlePondsIndex)
+	mux.HandleFunc(cfg.BasePath+"/api/create", ctrl.handleCreatePost)
 	mux.HandleFunc(cfg.BasePath+"/feed", ctrl.handleFeed)
 	mux.HandleFunc(cfg.BasePath+"/", ctrl.handleIndex)
 	mux.HandleFunc(cfg.BasePath, ctrl.handleIndex)
@@ -40,11 +43,11 @@ func RegisterRoutes(mux *http.ServeMux, db *gorm.DB, logger *log.Logger, cfg Con
 
 func mustTemplates(dir string) *template.Template {
 	funcMap := template.FuncMap{
-		"avatar":     avatarOrFallback,
-		"bio":        bioOrEmpty,
-		"mediaKind":  mediaKind,
-		"formatTime": formatTime,
-		"uintToString": uintToString,
+		"avatar":       avatarOrFallback,
+		"bio":          bioOrEmpty,
+		"mediaKind":    mediaKind,
+		"formatTime":   formatTime,
+		"uintToString":  uintToString,
 	}
 
 	pattern := filepath.Join(dir, "*.html")

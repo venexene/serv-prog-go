@@ -1,0 +1,49 @@
+{{define "login.html"}}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 text-slate-900">
+  <div class="min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-md rounded-3xl bg-white p-8 shadow-sm border border-slate-200">
+      <h1 class="text-3xl font-bold tracking-tight">Login</h1>
+      <p class="mt-2 text-sm text-slate-500">Войдите в аккаунт.</p>
+
+      {{if .Error}}
+      <div class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        {{.Error}}
+      </div>
+      {{end}}
+
+      <form class="mt-6 space-y-4" method="POST" action="/login?next={{.Next}}">
+        {{.CSRFField}}
+        <input type="hidden" name="next" value="{{.Next}}">
+
+        <div>
+          <label class="mb-1 block text-sm font-medium">Email or username</label>
+          <input name="login" value="{{.Login}}" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 outline-none focus:border-emerald-500" required>
+        </div>
+
+        <div>
+          <label class="mb-1 block text-sm font-medium">Password</label>
+          <input type="password" name="password" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 outline-none focus:border-emerald-500" required>
+        </div>
+
+        <button type="submit" class="w-full rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">
+          Sign in
+        </button>
+      </form>
+
+      <p class="mt-4 text-sm text-slate-600">
+        Нет аккаунта?
+        <a class="font-semibold text-emerald-700 hover:text-emerald-800" href="/register?next={{.Next}}">Register</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+{{end}}

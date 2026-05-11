@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	account "github.com/venexene/serv-prog-go/greenswamp/account"
 	internal "github.com/venexene/serv-prog-go/greenswamp/internal"
 	"github.com/venexene/serv-prog-go/greenswamp/posts"
 	"gorm.io/driver/sqlite"
@@ -28,10 +29,16 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	if err := account.AutoMigrate(db); err != nil {
+		logger.Fatal(err)
+	}
+
 	app := internal.CreateApp(cfg, logger)
 
 	mux := http.NewServeMux()
 	app.Routes(mux)
+
+	account.RegisterRoutes(mux, db, logger, "templates/account")
 
 	posts.RegisterRoutes(mux, db, logger, posts.Config{
 		BasePath:     "/posts",

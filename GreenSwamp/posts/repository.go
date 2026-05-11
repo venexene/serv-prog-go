@@ -167,6 +167,29 @@ func extractPostIDs(posts []Post) []uint {
 	return ids
 }
 
+func (r *Repository) CreatePost(ctx context.Context, userID uint, content string, postType string) (*Post, error) {
+	if content == "" {
+		return nil, errors.New("content cannot be empty")
+	}
+
+	post := &Post{
+		UserID:   userID,
+		Content:  content,
+		PostType: postType,
+	}
+
+	if err := r.db.WithContext(ctx).Create(post).Error; err != nil {
+		return nil, fmt.Errorf("failed to create post: %w", err)
+	}
+
+	// Load the created post with user information
+	if err := r.db.WithContext(ctx).Preload("User").First(post, post.PostID).Error; err != nil {
+		return nil, fmt.Errorf("failed to load created post: %w", err)
+	}
+
+	return post, nil
+}
+
 func ensureTrendingView(db *gorm.DB) error {
 	const q = `
 	CREATE VIEW IF NOT EXISTS trending_ponds AS

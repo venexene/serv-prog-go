@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	account "github.com/venexene/serv-prog-go/greenswamp/account"
 )
 
 type NavLinks struct {
@@ -27,11 +29,13 @@ type FeedItem struct {
 }
 
 type FeedPage struct {
-	Title    string
-	BasePath string
-	Tag      string
-	Items    []FeedItem
-	Trending []TrendingPond
+	Title       string
+	BasePath    string
+	Tag         string
+	Items       []FeedItem
+	Trending    []TrendingPond
+	CurrentUser *account.IdentityUser
+	CSRFToken   string
 }
 
 type ProfilePage struct {
@@ -43,10 +47,11 @@ type ProfilePage struct {
 }
 
 type ProfilePageData struct {
-	Title    string
-	BasePath string
-	Profile  ProfilePage
-	Trending []TrendingPond
+	Title       string
+	BasePath    string
+	Profile     ProfilePage
+	Trending    []TrendingPond
+	CurrentUser *account.IdentityUser
 }
 
 type PostPageData struct {

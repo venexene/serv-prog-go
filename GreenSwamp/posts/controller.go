@@ -2,6 +2,7 @@ package posts
 
 import (
 	"context"
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
@@ -9,11 +10,14 @@ import (
 	"strconv"
 	"strings"
 
+	csrf "github.com/gorilla/csrf"
+	account "github.com/venexene/serv-prog-go/greenswamp/account"
 	"gorm.io/gorm"
 )
 
 type Controller struct {
 	repo     *Repository
+	authRepo *account.Repository
 	tmpl     *template.Template
 	basePath string
 	logger   *log.Logger
@@ -48,10 +52,12 @@ func (c *Controller) handleFeed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := FeedPage{
-		Title:    "Greenswamp · Feed",
-		BasePath: c.basePath,
-		Items:    c.buildItems(posts),
-		Trending: c.loadTrending(r.Context()),
+		Title:       "Greenswamp · Feed",
+		BasePath:    c.basePath,
+		Items:       c.buildItems(posts),
+		Trending:    c.loadTrending(r.Context()),
+		CurrentUser: c.currentUser(r),
+		CSRFToken:   csrf.Token(r),
 	}
 
 	c.execute(w, "feed.html", data)
@@ -80,11 +86,12 @@ func (c *Controller) handlePond(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := FeedPage{
-		Title:    "Greenswamp · #" + tag,
-		BasePath: c.basePath,
-		Tag:      tag,
-		Items:    c.buildItems(posts),
-		Trending: c.loadTrending(r.Context()),
+		Title:       "Greenswamp · #" + tag,
+		BasePath:    c.basePath,
+		Tag:         tag,
+		Items:       c.buildItems(posts),
+		Trending:    c.loadTrending(r.Context()),
+		CurrentUser: c.currentUser(r),
 	}
 
 	c.execute(w, "feed.html", data)
@@ -119,10 +126,11 @@ func (c *Controller) handleProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := ProfilePageData{
-		Title:    user.DisplayName + " · Profile",
-		BasePath: c.basePath,
-		Profile:  profile,
-		Trending: c.loadTrending(r.Context()),
+		Title:       user.DisplayName + " · Profile",
+		BasePath:    c.basePath,
+		Profile:     profile,
+		Trending:    c.loadTrending(r.Context()),
+		CurrentUser: c.currentUser(r),
 	}
 
 	c.execute(w, "profile.html", data)
@@ -181,6 +189,19 @@ func (c *Controller) loadTrending(ctx context.Context) []TrendingPond {
 	return tags
 }
 
+func (c *Controller) currentUser(r *http.Request) *account.IdentityUser {
+	if c.authRepo == nil {
+		return nil
+	}
+
+	user, ok := c.authRepo.CurrentUserFromRequest(r.Context(), r, "gs_auth_session")
+	if !ok {
+		return nil
+	}
+
+	return user
+}
+
 func (c *Controller) execute(w http.ResponseWriter, name string, data any) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := c.tmpl.ExecuteTemplate(w, name, data); err != nil {
@@ -195,5 +216,58 @@ func (c *Controller) renderError(w http.ResponseWriter, status int, msg string) 
 	_ = c.tmpl.ExecuteTemplate(w, "error.html", map[string]any{
 		"Status":  status,
 		"Message": msg,
+	})
+}
+
+func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	// Check authentication
+	currentUser := c.currentUser(r)
+	if currentUser == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Unauthorized"})
+		return
+	}
+
+	// Parse form data
+	if err := r.ParseForm(); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid form data"})
+		return
+	}
+
+	content := strings.TrimSpace(r.FormValue("content"))
+	if content == "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Content cannot be empty"})
+		return
+	}
+
+	// Create the post
+	post, err := c.repo.CreatePost(r.Context(), currentUser.UserID, content, "post")
+	if err != nil {
+		c.logger.Printf("failed to create post: %v", err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to create post"})
+		return
+	}
+
+	// Return success response
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Post created successfully",
+		"post_id": post.PostID,
 	})
 }
