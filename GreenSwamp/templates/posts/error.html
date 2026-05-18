@@ -1,6 +1,6 @@
 {{define "error.html"}}
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,7 +12,7 @@
     <div class="w-full max-w-xl rounded-3xl bg-white shadow-sm border border-slate-200 p-8">
       <div class="text-sm font-medium text-slate-500">HTTP {{.Status}}</div>
       <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900">{{.Message}}</h1>
-      <p class="mt-3 text-slate-600">Страница недоступна или произошла ошибка при загрузке данных.</p>
+      <p class="mt-3 text-slate-600">The page is unavailable or an error occurred while loading data.</p>
       <a href="/posts/feed" class="mt-6 inline-flex items-center rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">
         Back to feed
       </a>

@@ -64,7 +64,7 @@
           </div>
 
           <p class="mt-4 text-sm leading-6 text-slate-600">
-            Войдите, чтобы использовать личные действия и быстрый возврат после выхода.
+            Sign in to use personal actions and quickly return after logout.
           </p>
 
           <div class="mt-4 space-y-2">
@@ -152,7 +152,7 @@
             {{end}}
 
             <div class="mt-4 flex items-center gap-4">
-              <a href="{{.Post}}" class="text-sm text-slate-500 hover:text-slate-700">View details</a>
+              <a href="{{.Nav.Post}}" class="text-sm text-slate-500 hover:text-slate-700">View details</a>
               {{if .InteractionCount}}
               <span class="text-sm text-slate-500">{{.InteractionCount}} interactions</span>
               {{end}}

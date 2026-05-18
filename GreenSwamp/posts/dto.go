@@ -135,7 +135,7 @@ func avatarOrFallback(url *string) string {
 	if url != nil && strings.TrimSpace(*url) != "" {
 		return *url
 	}
-	return "https://i.pravatar.cc/160?u=greenswamp"
+	return "/static/avatars/avatar.jpeg"
 }
 
 func bioOrEmpty(bio *string) string {

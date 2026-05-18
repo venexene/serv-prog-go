@@ -69,7 +69,7 @@
         </div>
 
         <p class="mt-4 text-sm leading-6 text-slate-600">
-          Войдите в аккаунт, чтобы увидеть персональные действия и управлять профилем.
+          Sign in to view personal actions and manage your profile.
         </p>
 
         <div class="mt-4 space-y-2">
@@ -85,7 +85,7 @@
 
       <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
         <div class="font-semibold">Greenswamp</div>
-        <p class="mt-4 text-sm leading-6 text-slate-600">Свежая лента, теги, профили и детальные карточки постов.</p>
+        <p class="mt-4 text-sm leading-6 text-slate-600">Fresh feed, tags, profiles and detailed post cards.</p>
         <a href="/" class="mt-4 inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Back to landing</a>
       </div>
     </aside>
@@ -94,7 +94,7 @@
       {{if .CurrentUser}}
       <div class="mb-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex gap-4">
-          <img src="https://i.pravatar.cc/160?u={{.CurrentUser.Username}}" alt="{{.CurrentUser.DisplayName}}" class="h-12 w-12 rounded-2xl object-cover">
+          <img src="/static/avatars/avatar.jpeg" alt="{{.CurrentUser.DisplayName}}" class="h-12 w-12 rounded-2xl object-cover">
           <div class="flex-1">
             <form id="create-post-form" class="space-y-4">
               <input type="hidden" id="csrf-token" name="gorilla.csrf.Token" value="{{.CSRFToken}}">
@@ -160,7 +160,7 @@
             {{end}}
 
             <div class="mt-4 flex items-center gap-4">
-              <a href="{{.Post}}" class="text-sm text-slate-500 hover:text-slate-700">View details</a>
+              <a href="{{.Nav.Post}}" class="text-sm text-slate-500 hover:text-slate-700">View details</a>
               {{if .InteractionCount}}
               <span class="text-sm text-slate-500">{{.InteractionCount}} interactions</span>
               {{end}}
@@ -177,19 +177,11 @@
 
     <aside class="space-y-4 lg:col-span-1">
       <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
-        <div class="font-semibold">Create Post</div>
-        <p class="mt-2 text-sm text-slate-600">Share your thoughts with the community.</p>
-        <a href="#" class="mt-4 inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">
-          New Ribbit
-        </a>
-      </div>
-
-      <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
         <div class="font-semibold">Trending Tags</div>
         <div class="mt-3 space-y-2">
-          <a href="#" class="inline-block rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 hover:bg-slate-200">#campus</a>
-          <a href="#" class="inline-block rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 hover:bg-slate-200">#study</a>
-          <a href="#" class="inline-block rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 hover:bg-slate-200">#events</a>
+          {{range .Trending}}
+          <a href="{{.URL}}" class="inline-block rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 hover:bg-slate-200">#{{.TagName}}</a>
+          {{end}}
         </div>
       </div>
     </aside>

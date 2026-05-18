@@ -79,7 +79,7 @@ func (c *AccountController) login(w http.ResponseWriter, r *http.Request) {
 		if login == "" || password == "" {
 			c.render(w, r, "login.html", AccountPageData{
 				Title:     "Login",
-				Error:     "Введите логин и пароль.",
+				Error:     "Please enter your login and password.",
 				Next:      next,
 				Login:     login,
 				CSRFField: template.HTML(csrf.TemplateField(r)),
@@ -92,7 +92,7 @@ func (c *AccountController) login(w http.ResponseWriter, r *http.Request) {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				c.render(w, r, "login.html", AccountPageData{
 					Title:     "Login",
-					Error:     "Пользователь не найден.",
+					Error:     "User not found.",
 					Next:      next,
 					Login:     login,
 					CSRFField: template.HTML(csrf.TemplateField(r)),
@@ -106,7 +106,7 @@ func (c *AccountController) login(w http.ResponseWriter, r *http.Request) {
 		if bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password)) != nil {
 			c.render(w, r, "login.html", AccountPageData{
 				Title:     "Login",
-				Error:     "Неверный пароль.",
+				Error:     "Incorrect password.",
 				Next:      next,
 				Login:     login,
 				CSRFField: template.HTML(csrf.TemplateField(r)),
@@ -157,7 +157,7 @@ func (c *AccountController) register(w http.ResponseWriter, r *http.Request) {
 		if username == "" || email == "" || password == "" || password2 == "" {
 			c.render(w, r, "register.html", AccountPageData{
 				Title:       "Register",
-				Error:       "Заполните все обязательные поля.",
+				Error:       "Please fill in all required fields.",
 				Next:        next,
 				Username:    username,
 				DisplayName: displayName,
@@ -170,7 +170,7 @@ func (c *AccountController) register(w http.ResponseWriter, r *http.Request) {
 		if password != password2 {
 			c.render(w, r, "register.html", AccountPageData{
 				Title:       "Register",
-				Error:       "Пароли не совпадают.",
+				Error:       "Passwords do not match.",
 				Next:        next,
 				Username:    username,
 				DisplayName: displayName,
@@ -183,7 +183,7 @@ func (c *AccountController) register(w http.ResponseWriter, r *http.Request) {
 		if len(password) < 8 {
 			c.render(w, r, "register.html", AccountPageData{
 				Title:       "Register",
-				Error:       "Пароль должен быть не короче 8 символов.",
+				Error:       "Password must be at least 8 characters.",
 				Next:        next,
 				Username:    username,
 				DisplayName: displayName,
@@ -200,7 +200,7 @@ func (c *AccountController) register(w http.ResponseWriter, r *http.Request) {
 		if _, err := c.repo.FindByUsername(r.Context(), username); err == nil {
 			c.render(w, r, "register.html", AccountPageData{
 				Title:       "Register",
-				Error:       "Такой username уже занят.",
+				Error:       "That username is already taken.",
 				Next:        next,
 				Username:    username,
 				DisplayName: displayName,
@@ -212,7 +212,7 @@ func (c *AccountController) register(w http.ResponseWriter, r *http.Request) {
 		if _, err := c.repo.FindByEmail(r.Context(), email); err == nil {
 			c.render(w, r, "register.html", AccountPageData{
 				Title:       "Register",
-				Error:       "Такой email уже зарегистрирован.",
+				Error:       "That email is already registered.",
 				Next:        next,
 				Username:    username,
 				DisplayName: displayName,
@@ -241,8 +241,6 @@ func (c *AccountController) register(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Create a corresponding user in the posts.users table for post attribution
-		// Using raw SQL to avoid circular import with posts package
 		err = c.db.WithContext(r.Context()).Exec(
 			`INSERT INTO users (user_id, username, display_name, is_active, created_at) 
 			 VALUES (?, ?, ?, ?, ?)`,
@@ -254,7 +252,6 @@ func (c *AccountController) register(w http.ResponseWriter, r *http.Request) {
 		).Error
 		if err != nil {
 			c.logger.Printf("warning: failed to create posts.users record: %v", err)
-			// Don't fail registration if this fails, just log it
 		}
 
 		token, err := newToken()

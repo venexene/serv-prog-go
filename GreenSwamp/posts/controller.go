@@ -227,7 +227,6 @@ func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check authentication
 	currentUser := c.currentUser(r)
 	if currentUser == nil {
 		w.Header().Set("Content-Type", "application/json")
@@ -236,7 +235,6 @@ func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse form data
 	if err := r.ParseForm(); err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -252,7 +250,6 @@ func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create the post
 	post, err := c.repo.CreatePost(r.Context(), currentUser.UserID, content, "post")
 	if err != nil {
 		c.logger.Printf("failed to create post: %v", err)
@@ -262,7 +259,6 @@ func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return success response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]interface{}{

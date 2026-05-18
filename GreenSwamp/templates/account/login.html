@@ -1,6 +1,6 @@
 {{define "login.html"}}
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,7 +11,7 @@
   <div class="min-h-screen flex items-center justify-center px-4">
     <div class="w-full max-w-md rounded-3xl bg-white p-8 shadow-sm border border-slate-200">
       <h1 class="text-3xl font-bold tracking-tight">Login</h1>
-      <p class="mt-2 text-sm text-slate-500">Войдите в аккаунт.</p>
+      <p class="mt-2 text-sm text-slate-500">Sign in to your account.</p>
 
       {{if .Error}}
       <div class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
@@ -39,7 +39,7 @@
       </form>
 
       <p class="mt-4 text-sm text-slate-600">
-        Нет аккаунта?
+        Don't have an account?
         <a class="font-semibold text-emerald-700 hover:text-emerald-800" href="/register?next={{.Next}}">Register</a>
       </p>
     </div>

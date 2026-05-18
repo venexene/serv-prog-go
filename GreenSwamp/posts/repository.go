@@ -172,18 +172,61 @@ func (r *Repository) CreatePost(ctx context.Context, userID uint, content string
 		return nil, errors.New("content cannot be empty")
 	}
 
+	tx := r.db.WithContext(ctx).Begin()
 	post := &Post{
 		UserID:   userID,
 		Content:  content,
 		PostType: postType,
 	}
 
-	if err := r.db.WithContext(ctx).Create(post).Error; err != nil {
+	if err := tx.Create(post).Error; err != nil {
+		tx.Rollback()
 		return nil, fmt.Errorf("failed to create post: %w", err)
 	}
 
-	// Load the created post with user information
-	if err := r.db.WithContext(ctx).Preload("User").First(post, post.PostID).Error; err != nil {
+	matches := hashtagRe.FindAllStringSubmatch(content, -1)
+	seen := make(map[string]struct{})
+	for _, m := range matches {
+		if len(m) < 3 {
+			continue
+		}
+		tagName := normalizeTagName(m[2])
+		if tagName == "" {
+			continue
+		}
+		if _, ok := seen[tagName]; ok {
+			continue
+		}
+		seen[tagName] = struct{}{}
+
+		var t Tag
+		err := tx.Where("LOWER(tag_name) = ?", tagName).First(&t).Error
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				t = Tag{TagName: tagName}
+				if err := tx.Create(&t).Error; err != nil {
+					tx.Rollback()
+					return nil, fmt.Errorf("failed to create tag: %w", err)
+				}
+			} else {
+				tx.Rollback()
+				return nil, fmt.Errorf("find tag: %w", err)
+			}
+		}
+
+		pt := PostTag{PostID: post.PostID, TagID: t.TagID}
+		if err := tx.Create(&pt).Error; err != nil {
+			tx.Rollback()
+			return nil, fmt.Errorf("failed to attach tag to post: %w", err)
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return nil, fmt.Errorf("commit post transaction: %w", err)
+	}
+
+	if err := r.db.WithContext(ctx).Preload("User").Preload("Tags").First(post, post.PostID).Error; err != nil {
 		return nil, fmt.Errorf("failed to load created post: %w", err)
 	}
 
