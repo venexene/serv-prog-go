@@ -12,16 +12,9 @@
         extend: {
           colors: {
             swamp: {
-              50: '#f0fdf4',
-              100: '#dcfce7',
-              200: '#bbf7d0',
-              300: '#86efac',
-              400: '#4ade80',
-              500: '#22c55e',
-              600: '#16a34a',
-              700: '#15803d',
-              800: '#166534',
-              900: '#14532d',
+              50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
+              400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
+              800: '#166534', 900: '#14532d',
             }
           }
         }
@@ -29,94 +22,71 @@
     }
   </script>
 </head>
-<body class="bg-slate-100 text-slate-900">
-  <div class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-4">
+<body class="bg-swamp-50 text-swamp-900">
+  <div class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-0 px-4 py-6 lg:grid-cols-4 lg:divide-x">
     <aside class="space-y-4 lg:col-span-1">
       {{if .CurrentUser}}
-      <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+      <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
         <div class="flex items-center gap-3">
-          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 font-bold text-emerald-700">
-            U
-          </div>
-          <div>
-            <div class="font-semibold">{{.CurrentUser.DisplayName}}</div>
-            <div class="text-sm text-slate-500">@{{.CurrentUser.Username}}</div>
-          </div>
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-swamp-100 font-bold text-swamp-700">U</div>
+          <div><div class="font-semibold">{{.CurrentUser.DisplayName}}</div><div class="text-sm text-swamp-500">@{{.CurrentUser.Username}}</div></div>
         </div>
-
-        <div class="mt-4 rounded-2xl bg-emerald-50 p-4">
-          <div class="text-sm font-medium text-emerald-900">You are signed in</div>
-          <div class="mt-1 text-sm text-emerald-800">Welcome back to Greenswamp.</div>
+        <div class="mt-4 rounded-2xl bg-swamp-50 p-4">
+          <div class="text-sm font-medium text-swamp-900">You are signed in</div>
+          <div class="mt-1 text-sm text-swamp-800">Welcome back to Greenswamp.</div>
         </div>
-
         <div class="mt-4 space-y-2">
-          <a href="{{.BasePath}}/profile/{{.CurrentUser.Username}}" class="inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">
-            My profile
-          </a>
-          <a href="/logout?next={{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-            Logout
-          </a>
+          <a href="{{.BasePath}}/profile/{{.CurrentUser.Username}}" class="inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">My profile</a>
+          <a href="/logout?next={{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full border border-swamp-200 bg-white px-4 py-2.5 text-sm font-semibold text-swamp-700 hover:bg-swamp-50">Logout</a>
         </div>
       </div>
       {{else}}
-      <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+      <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
         <div class="flex items-center gap-3">
-          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 font-bold text-slate-700">G</div>
-          <div>
-            <div class="font-semibold">Guest mode</div>
-            <div class="text-sm text-slate-500">Login or register</div>
-          </div>
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-swamp-100 font-bold text-swamp-700">G</div>
+          <div><div class="font-semibold">Guest mode</div><div class="text-sm text-swamp-500">Login or register</div></div>
         </div>
-
-        <p class="mt-4 text-sm leading-6 text-slate-600">
-          Sign in to view personal actions and manage your profile.
-        </p>
-
+        <p class="mt-4 text-sm leading-6 text-swamp-600">Sign in to post ribbits and interact with the community.</p>
         <div class="mt-4 space-y-2">
-          <a href="/login?next={{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">
-            Login
-          </a>
-          <a href="/register?next={{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">
-            Register
-          </a>
+          <a href="/login?next={{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">Login</a>
+          <a href="/register?next={{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full border border-swamp-200 bg-white px-4 py-2.5 text-sm font-semibold text-swamp-700 hover:bg-swamp-50">Register</a>
         </div>
       </div>
       {{end}}
-
-      <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+      <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
         <div class="font-semibold">Greenswamp</div>
-        <p class="mt-4 text-sm leading-6 text-slate-600">Fresh feed, tags, profiles and detailed post cards.</p>
-        <a href="/" class="mt-4 inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Back to landing</a>
+        <p class="mt-4 text-sm leading-6 text-swamp-600">Fresh feed, tags, profiles and detailed post cards.</p>
+        <a href="/" class="mt-4 inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">Back to landing</a>
       </div>
     </aside>
 
     <main class="lg:col-span-2">
       {{if .CurrentUser}}
-      <div class="mb-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="mb-6 rounded-2xl border border-swamp-100 bg-white p-6 shadow-sm">
         <div class="flex gap-4">
           <img src="/static/avatars/avatar.jpeg" alt="{{.CurrentUser.DisplayName}}" class="h-12 w-12 rounded-2xl object-cover">
           <div class="flex-1">
-            <form id="create-post-form" class="space-y-4">
+            <form id="create-post-form" class="space-y-4" enctype="multipart/form-data">
               <input type="hidden" id="csrf-token" name="gorilla.csrf.Token" value="{{.CSRFToken}}">
-              <textarea 
-                id="post-content"
-                name="content" 
-                placeholder="What's happening?"
-                class="w-full resize-none border-0 bg-transparent text-lg placeholder-slate-500 focus:outline-none focus:ring-0"
-                rows="3"
-                maxlength="500"
-                required
-              ></textarea>
+              <textarea id="post-content" name="content" placeholder="What's happening?"
+                class="w-full resize-none border-0 bg-transparent text-lg placeholder-swamp-500 focus:outline-none focus:ring-0"
+                rows="3" maxlength="500" required></textarea>
+              <div id="media-preview" class="hidden relative mt-2">
+                <img id="media-preview-img" src="" class="w-full max-h-48 rounded-xl object-cover">
+                <button type="button" id="media-remove-btn" class="absolute top-2 right-2 bg-slate-800/60 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-slate-800/80 text-sm">✕</button>
+              </div>
               <div class="flex items-center justify-between">
-                <div class="text-sm text-slate-500" id="char-count">0/500</div>
-                <button 
-                  type="submit" 
-                  id="post-submit-btn"
-                  class="rounded-full bg-swamp-500 px-6 py-2 text-sm font-semibold text-white hover:bg-swamp-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled
-                >
-                  Ribbit
-                </button>
+                <div class="flex items-center gap-3">
+                  <label class="cursor-pointer text-swamp-500 hover:text-swamp-600 transition-colors" title="Attach image">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <input type="file" id="media-file" name="media" accept="image/*" class="hidden">
+                  </label>
+                  <div class="text-sm text-swamp-500" id="char-count">0/500</div>
+                </div>
+                <button type="submit" id="post-submit-btn"
+                  class="rounded-full bg-swamp-500 px-6 py-2 text-sm font-semibold text-white hover:bg-swamp-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Ribbit</button>
               </div>
             </form>
           </div>
@@ -125,63 +95,65 @@
       {{end}}
 
       {{range .Items}}
-      <article class="mb-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div class="flex gap-4">
-          <img src="{{avatar .User.AvatarURL}}" alt="{{.User.DisplayName}}" class="h-14 w-14 rounded-2xl object-cover">
-          <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="font-semibold hover:underline">{{.User.DisplayName}}</a>
-              <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="text-sm text-slate-500">@{{.User.Username}}</a>
-              <span class="text-slate-400">·</span>
-              <span class="text-sm text-slate-500">{{.TimeLabel}}</span>
-            </div>
-
-            {{if .IsEvent}}
-            <div class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-              <div class="text-sm font-semibold text-emerald-900">Event</div>
-              <div class="mt-1 text-sm text-emerald-800">{{.EventTimeLabel}} · {{.Event.Location}}</div>
-              {{if .Event.HostOrg}}<div class="text-sm text-emerald-700">Hosted by {{.Event.HostOrg}}</div>{{end}}
-            </div>
-            {{end}}
-
-            <div class="mt-4 whitespace-pre-wrap text-lg leading-8 text-slate-800">{{.ContentHTML}}</div>
-
-            {{if .MediaURL}}
-            <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-              {{if eq .MediaType "image"}}
-                <img src="{{.MediaURL}}" alt="{{if .AltText}}{{.AltText}}{{else}}{{.Content}}{{end}}" class="w-full max-h-[640px] object-cover">
-              {{else if eq .MediaType "video"}}
-                <video controls class="w-full max-h-[640px]">
-                  <source src="{{.MediaURL}}" type="video/mp4">
-                  Your browser does not support the video tag.
-                </video>
+      <article class="mb-6 rounded-2xl border border-swamp-100 bg-white shadow-sm{{if .IsEvent}} border-l-4 border-l-swamp-400{{end}}" data-post-id="{{.PostID}}">
+        {{if .IsEvent}}<div class="px-6 pt-4 flex items-center gap-2 text-swamp-600 text-sm font-semibold">📅 Event</div>{{end}}
+        <div class="p-6{{if .IsEvent}} pt-2{{end}}">
+          <div class="flex gap-4">
+            <img src="{{avatar .User.AvatarURL}}" alt="{{.User.DisplayName}}" class="h-14 w-14 rounded-2xl object-cover">
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="font-semibold hover:underline">{{.User.DisplayName}}</a>
+                <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="text-sm text-swamp-500">@{{.User.Username}}</a>
+                <span class="text-swamp-400">·</span>
+                <span class="text-sm text-swamp-500">{{.TimeLabel}}</span>
+              </div>
+              {{if .IsEvent}}
+              <div class="mt-3 rounded-2xl border border-swamp-200 bg-swamp-50 p-4">
+                <div class="text-sm text-swamp-800">{{.EventTimeLabel}} · {{.Event.Location}}</div>
+                {{if .Event.HostOrg}}<div class="text-sm text-swamp-700">Hosted by {{.Event.HostOrg}}</div>{{end}}
+              </div>
               {{end}}
-            </div>
-            {{end}}
-
-            <div class="mt-4 flex items-center gap-4">
-              <a href="{{.Nav.Post}}" class="text-sm text-slate-500 hover:text-slate-700">View details</a>
-              {{if .InteractionCount}}
-              <span class="text-sm text-slate-500">{{.InteractionCount}} interactions</span>
+              <div class="mt-4 whitespace-pre-wrap text-lg leading-8 text-swamp-800">{{.ContentHTML}}</div>
+              {{if .MediaURL}}
+              <div class="mt-5 overflow-hidden rounded-2xl border border-swamp-200 bg-swamp-50">
+                {{if eq .MediaType "image"}}<img src="{{.MediaURL}}" alt="{{if .AltText}}{{.AltText}}{{else}}{{.Content}}{{end}}" class="w-full max-h-[640px] object-cover">
+                {{else if eq .MediaType "video"}}<video controls class="w-full max-h-[640px]"><source src="{{.MediaURL}}" type="video/mp4"></video>{{end}}
+              </div>
               {{end}}
+              <div class="mt-4 flex items-center gap-6 text-swamp-500">
+                <button class="interact-btn flex items-center space-x-2 hover:text-red-500 transition-colors{{if .LikedByCurrentUser}} text-red-500{{end}}"
+                  data-post-id="{{.PostID}}" data-action="like">
+                  <svg class="w-5 h-5" fill="{{if .LikedByCurrentUser}}currentColor{{else}}none{{end}}" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                  </svg><span class="like-count">{{.LikeCount}}</span>
+                </button>
+                <button class="interact-btn flex items-center space-x-2 hover:text-swamp-600 transition-colors"
+                  data-post-id="{{.PostID}}" data-action="reribb">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                  </svg><span class="reribb-count">{{.ReribbCount}}</span>
+                </button>
+                <a href="{{.Nav.Post}}" class="flex items-center space-x-2 hover:text-swamp-600 transition-colors">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                  </svg><span>{{if .InteractionCount}}{{.InteractionCount}}{{else}}View{{end}}</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </article>
       {{else}}
-      <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200 text-center">
-        <div class="text-slate-500">No posts yet. Be the first to share something!</div>
-      </div>
+      <div class="rounded-2xl bg-white p-6 shadow-sm border border-swamp-100 text-center"><div class="text-swamp-500">No posts yet. Be the first to share something!</div></div>
       {{end}}
     </main>
 
     <aside class="space-y-4 lg:col-span-1">
-      <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+      <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
         <div class="font-semibold">Trending Tags</div>
         <div class="mt-3 space-y-2">
-          {{range .Trending}}
-          <a href="{{.URL}}" class="inline-block rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 hover:bg-slate-200">#{{.TagName}}</a>
-          {{end}}
+          {{range .Trending}}<a href="{{.URL}}" class="inline-block rounded-full bg-swamp-100 px-3 py-1 text-sm text-swamp-700 hover:bg-swamp-200">#{{.TagName}}</a>
+          {{else}}<div class="text-sm text-swamp-500">No trending topics yet.</div>{{end}}
         </div>
       </div>
     </aside>
@@ -189,122 +161,128 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const form = document.getElementById('create-post-form');
-      const textarea = document.getElementById('post-content');
-      const submitBtn = document.getElementById('post-submit-btn');
-      const charCount = document.getElementById('char-count');
+      var form = document.getElementById('create-post-form');
+      var textarea = document.getElementById('post-content');
+      var submitBtn = document.getElementById('post-submit-btn');
+      var charCount = document.getElementById('char-count');
+      var mediaFile = document.getElementById('media-file');
+      var mediaPreview = document.getElementById('media-preview');
+      var mediaPreviewImg = document.getElementById('media-preview-img');
+      var mediaRemoveBtn = document.getElementById('media-remove-btn');
 
-      // Check if form elements exist (only for logged-in users)
-      if (!form || !textarea || !submitBtn || !charCount) {
-        console.log('Post form not found - user may not be logged in');
-        return;
-      }
-
-      // Character count and button state
-      function updateUI() {
-        const length = textarea.value.trim().length;
-        charCount.textContent = length + '/500';
-        submitBtn.disabled = length === 0 || length > 500;
-      }
-
-      textarea.addEventListener('input', updateUI);
-      updateUI();
-
-      // Form submission
-      form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const content = textarea.value.trim();
-        if (!content) return;
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Posting...';
-
-        try {
-          const basePath = '{{.BasePath}}';
-          const url = basePath + '/api/create';
-          
-          // Get CSRF token from the hidden input field
-          const csrfToken = document.getElementById('csrf-token').value;
-          
-          console.log('Posting to:', url);
-          console.log('CSRF token:', csrfToken ? 'present (' + csrfToken.substring(0, 10) + '...)' : 'missing');
-          
-          const formData = new URLSearchParams({
-            content: content,
-            'gorilla.csrf.Token': csrfToken
-          });
-          
-          const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'X-CSRF-Token': csrfToken
-            },
-            body: formData
-          });
-
-          console.log('Response status:', response.status);
-          
-          const responseText = await response.text();
-          console.log('Response text:', responseText);
-          
-          let result;
-          try {
-            result = JSON.parse(responseText);
-          } catch (parseError) {
-            console.error('Failed to parse JSON:', parseError);
-            console.error('Response was:', responseText);
-            showMessage('Server error - invalid response', 'error');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Ribbit';
-            return;
-          }
-
-          if (response.ok && result.success) {
-            // Clear the form
-            textarea.value = '';
-            updateUI();
-            
-            // Show success message
-            showMessage('Post created successfully!', 'success');
-            
-            // Optionally reload the page to show the new post
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
-          } else {
-            showMessage(result.error || 'Failed to create post', 'error');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          showMessage('Network error. Please try again.', 'error');
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Ribbit';
+      if (form && textarea && submitBtn && charCount) {
+        function updateUI() {
+          var len = textarea.value.trim().length;
+          charCount.textContent = len + '/500';
+          submitBtn.disabled = len === 0 || len > 500;
         }
+        textarea.addEventListener('input', updateUI);
+        updateUI();
+
+        // Media preview
+        if (mediaFile && mediaPreview && mediaPreviewImg && mediaRemoveBtn) {
+          mediaFile.addEventListener('change', function() {
+            var file = this.files[0];
+            if (file) {
+              var reader = new FileReader();
+              reader.onload = function(e) {
+                mediaPreviewImg.src = e.target.result;
+                mediaPreview.classList.remove('hidden');
+              };
+              reader.readAsDataURL(file);
+            }
+          });
+          mediaRemoveBtn.addEventListener('click', function() {
+            mediaFile.value = '';
+            mediaPreview.classList.add('hidden');
+            mediaPreviewImg.src = '';
+          });
+        }
+
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var content = textarea.value.trim();
+          if (!content) return;
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Posting...';
+          var bp = '{{.BasePath}}';
+          var csrf = document.getElementById('csrf-token').value;
+
+          var fd = new FormData();
+          fd.append('content', content);
+          fd.append('gorilla.csrf.Token', csrf);
+          if (mediaFile && mediaFile.files[0]) {
+            fd.append('media', mediaFile.files[0]);
+          }
+
+          fetch(bp + '/api/create', {
+            method: 'POST',
+            headers: { 'X-CSRF-Token': csrf },
+            body: fd
+          }).then(function(r) { return r.text(); })
+            .then(function(t) {
+              var r = JSON.parse(t);
+              if (r.success) {
+                textarea.value = '';
+                if (mediaFile) mediaFile.value = '';
+                if (mediaPreview) mediaPreview.classList.add('hidden');
+                updateUI();
+                showMsg('Post created!', 'success');
+                setTimeout(function() { location.reload(); }, 800);
+              } else { showMsg(r.error || 'Error', 'error'); }
+            }).catch(function() { showMsg('Network error', 'error'); })
+            .finally(function() { submitBtn.disabled = false; submitBtn.textContent = 'Ribbit'; });
+        });
+      }
+
+      document.querySelectorAll('.interact-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var postId = this.dataset.postId;
+          var action = this.dataset.action;
+          var isLike = action === 'like';
+          if (!postId) return;
+          var countSpan = this.querySelector(isLike ? '.like-count' : '.reribb-count');
+          var svgIcon = this.querySelector('svg');
+          var cur = parseInt(countSpan.textContent) || 0;
+          var wasActive = isLike ? this.classList.contains('text-red-500') : false;
+
+          if (isLike) { this.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', this.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
+          countSpan.textContent = wasActive ? Math.max(0, cur - 1) : cur + 1;
+          btn.disabled = true;
+
+          var bp = '{{.BasePath}}';
+          var csrf = document.getElementById('csrf-token');
+          fetch(bp + '/api/interact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf ? csrf.value : '' },
+            body: JSON.stringify({ post_id: parseInt(postId), type: action })
+          }).then(function(r) { return r.json(); })
+            .then(function(r) {
+              if (r.success) {
+                countSpan.textContent = r.count;
+                if (isLike) {
+                  if (r.created) { btn.classList.add('text-red-500'); svgIcon.setAttribute('fill', 'currentColor'); }
+                  else { btn.classList.remove('text-red-500'); svgIcon.setAttribute('fill', 'none'); }
+                }
+              } else {
+                if (isLike) { btn.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', btn.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
+                countSpan.textContent = cur;
+              }
+            }).catch(function() {
+              if (isLike) { btn.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', btn.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
+              countSpan.textContent = cur;
+            }).finally(function() { btn.disabled = false; });
+        });
       });
 
-      function showMessage(message, type) {
-        // Remove existing message
-        const existing = document.querySelector('.message-notification');
-        if (existing) existing.remove();
-
-        // Create new message
-        const div = document.createElement('div');
-        div.className = `message-notification fixed top-4 right-4 px-4 py-2 rounded-lg text-sm font-medium z-50 ${
-          type === 'success' 
-            ? 'bg-green-100 text-green-800 border border-green-200' 
-            : 'bg-red-100 text-red-800 border border-red-200'
-        }`;
-        div.textContent = message;
-        
-        document.body.appendChild(div);
-        
-        // Auto remove after 3 seconds
-        setTimeout(() => {
-          if (div.parentNode) div.remove();
-        }, 3000);
+      function showMsg(m, t) {
+        var ex = document.querySelector('.message-notification');
+        if (ex) ex.remove();
+        var d = document.createElement('div');
+        d.className = 'message-notification fixed top-4 right-4 px-4 py-2 rounded-lg text-sm font-medium z-50 ' + (t === 'success' ? 'bg-swamp-100 text-swamp-800 border border-swamp-200' : 'bg-red-100 text-red-800 border border-red-200');
+        d.textContent = m;
+        document.body.appendChild(d);
+        setTimeout(function() { if (d.parentNode) d.remove(); }, 3000);
       }
     });
   </script>

@@ -6,46 +6,84 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{.Title}}</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            swamp: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-slate-100 text-slate-900">
-  <div class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-4">
+<body class="bg-swamp-50 text-swamp-900">
+  <div class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-0 px-4 py-6 lg:grid-cols-4 lg:divide-x">
     <aside class="lg:col-span-1">
-      <div class="sticky top-6 rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
-        <div class="flex items-center gap-3">
-          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 font-bold text-emerald-700">G</div>
-          <div>
-            <div class="font-semibold">Greenswamp</div>
-            <div class="text-sm text-slate-500">Post details</div>
+      <div class="sticky top-6 space-y-4">
+        <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
+          <div class="flex items-center gap-3">
+            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-swamp-100 font-bold text-swamp-700">G</div>
+            <div>
+              <div class="font-semibold">Greenswamp</div>
+              <div class="text-sm text-swamp-500">Post details</div>
+            </div>
+          </div>
+          <a href="{{.BasePath}}/feed" class="mt-5 inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">Back to feed</a>
+        </div>
+
+        <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
+          <div class="space-y-2">
+            <a href="{{.BasePath}}/feed" class="p-2 text-swamp-900 flex items-center space-x-2 hover:bg-swamp-50 rounded-lg">
+              <span class="text-lg font-semibold">Swamp</span>
+            </a>
+            <a href="{{.BasePath}}/ponds" class="p-2 text-swamp-900 flex items-center space-x-2 hover:bg-swamp-50 rounded-lg">
+              <span class="text-lg font-semibold">Events</span>
+            </a>
+            <a href="{{.BasePath}}/ponds" class="p-2 text-swamp-900 flex items-center space-x-2 hover:bg-swamp-50 rounded-lg">
+              <span class="text-lg font-semibold">Ponds</span>
+            </a>
           </div>
         </div>
-        <a href="{{.BasePath}}/feed" class="mt-5 inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Back to feed</a>
       </div>
     </aside>
 
     <main class="lg:col-span-2">
-      <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <article class="rounded-2xl border border-swamp-100 bg-white p-6 shadow-sm">
         <div class="flex gap-4">
           <img src="{{avatar .Item.User.AvatarURL}}" alt="{{.Item.User.DisplayName}}" class="h-14 w-14 rounded-2xl object-cover">
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
               <a href="{{.BasePath}}/profile/{{.Item.User.Username}}" class="font-semibold hover:underline">{{.Item.User.DisplayName}}</a>
-              <a href="{{.BasePath}}/profile/{{.Item.User.Username}}" class="text-sm text-slate-500">@{{.Item.User.Username}}</a>
-              <span class="text-slate-400">·</span>
-              <span class="text-sm text-slate-500">{{.Item.TimeLabel}}</span>
+              <a href="{{.BasePath}}/profile/{{.Item.User.Username}}" class="text-sm text-swamp-500">@{{.Item.User.Username}}</a>
+              <span class="text-swamp-400">·</span>
+              <span class="text-sm text-swamp-500">{{.Item.TimeLabel}}</span>
             </div>
 
             {{if .Item.IsEvent}}
-            <div class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-              <div class="text-sm font-semibold text-emerald-900">Event</div>
-              <div class="mt-1 text-sm text-emerald-800">{{.Item.EventTimeLabel}} · {{.Item.Event.Location}}</div>
-              {{if .Item.Event.HostOrg}}<div class="text-sm text-emerald-700">Hosted by {{.Item.Event.HostOrg}}</div>{{end}}
+            <div class="mt-3 rounded-2xl border border-swamp-200 bg-swamp-50 p-4">
+              <div class="text-sm font-semibold text-swamp-900">Event</div>
+              <div class="mt-1 text-sm text-swamp-800">{{.Item.EventTimeLabel}} · {{.Item.Event.Location}}</div>
+              {{if .Item.Event.HostOrg}}<div class="text-sm text-swamp-700">Hosted by {{.Item.Event.HostOrg}}</div>{{end}}
             </div>
             {{end}}
 
-            <div class="mt-4 whitespace-pre-wrap text-lg leading-8 text-slate-800">{{.Item.ContentHTML}}</div>
+            <div class="mt-4 whitespace-pre-wrap text-lg leading-8 text-swamp-800">{{.Item.ContentHTML}}</div>
 
             {{if .Item.MediaURL}}
-            <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+            <div class="mt-5 overflow-hidden rounded-2xl border border-swamp-200 bg-swamp-50">
               {{if eq .Item.MediaType "image"}}
                 <img src="{{.Item.MediaURL}}" alt="{{if .Item.AltText}}{{.Item.AltText}}{{else}}{{.Item.Content}}{{end}}" class="w-full max-h-[640px] object-cover">
               {{else if eq .Item.MediaType "video"}}
@@ -56,36 +94,183 @@
             </div>
             {{end}}
 
-            <div class="mt-5 flex flex-wrap items-center gap-4 text-sm text-slate-500">
-              <span>{{.Item.InteractionCount}} interactions</span>
-              <span>{{.Item.ViewCount}} views</span>
+            <div class="mt-5 flex flex-wrap items-center gap-6 text-sm text-swamp-500">
+              <button class="interact-btn flex items-center space-x-2 hover:text-red-500 transition-colors{{if .Item.LikedByCurrentUser}} text-red-500{{end}}"
+                data-post-id="{{.Item.PostID}}" data-action="like">
+                <svg class="w-5 h-5" fill="{{if .Item.LikedByCurrentUser}}currentColor{{else}}none{{end}}" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg><span class="like-count">{{.Item.LikeCount}}</span> likes
+              </button>
+              <button class="interact-btn flex items-center space-x-2 hover:text-swamp-600 transition-colors"
+                data-post-id="{{.Item.PostID}}" data-action="reribb">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg><span class="reribb-count">{{.Item.ReribbCount}}</span> reribbs
+              </button>
+              <span class="flex items-center space-x-1">
+                <span class="font-semibold text-swamp-700">{{.Item.ViewCount}}</span>
+                <span>views</span>
+              </span>
             </div>
           </div>
         </div>
       </article>
+
+      <!-- Comments Section -->
+      <div class="mt-6 rounded-2xl border border-swamp-100 bg-white p-6 shadow-sm">
+        <h3 class="font-semibold text-lg text-swamp-900 mb-4">Answers</h3>
+
+        <!-- Comment Form (auth only) -->
+        <form id="comment-form" class="mb-6 flex gap-3">
+          <input type="hidden" id="csrf-token-comment" value="{{.CSRFToken}}">
+          <img src="/static/avatars/avatar.jpeg" alt="You" class="h-10 w-10 rounded-2xl object-cover flex-shrink-0">
+          <div class="flex-1">
+            <textarea id="comment-content" name="content" placeholder="Write an answer..."
+              class="w-full resize-none rounded-xl border border-swamp-200 bg-swamp-50 px-4 py-3 text-sm placeholder-swamp-500 focus:border-swamp-400 focus:ring-2 focus:ring-swamp-200 focus:outline-none"
+              rows="2" maxlength="500" required></textarea>
+            <div class="mt-2 flex items-center justify-between">
+              <span class="text-xs text-swamp-500" id="comment-char-count">0/500</span>
+              <button type="submit" id="comment-submit-btn"
+                class="rounded-full bg-swamp-500 px-4 py-1.5 text-sm font-semibold text-white hover:bg-swamp-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Answer</button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Comments List -->
+        <div id="comments-list" class="space-y-4">
+          {{range .Comments}}
+          <div class="flex gap-3 border-b border-swamp-50 pb-4 last:border-0 last:pb-0">
+            <img src="{{.AuthorAvatar}}" alt="{{.AuthorName}}" class="h-10 w-10 rounded-2xl object-cover flex-shrink-0">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="font-semibold text-sm text-swamp-900">{{.AuthorName}}</span>
+                <span class="text-xs text-swamp-500">{{.TimeLabel}}</span>
+              </div>
+              <p class="mt-1 text-sm text-swamp-800 whitespace-pre-wrap">{{if .Content}}{{.Content}}{{end}}</p>
+            </div>
+          </div>
+          {{else}}
+          <div id="no-comments" class="text-sm text-swamp-500 text-center py-4">No answers yet. Be the first!</div>
+          {{end}}
+        </div>
+      </div>
     </main>
 
     <aside class="lg:col-span-1">
-      <div class="sticky top-6 rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+      <div class="sticky top-6 rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
         <div class="font-semibold">Trending topics</div>
         {{if .Trending}}
         <div class="mt-4 space-y-3">
           {{range .Trending}}
-          <a href="{{.URL}}" class="flex items-center justify-between gap-3 rounded-2xl px-3 py-2 hover:bg-slate-50">
+          <a href="{{.URL}}" class="flex items-center justify-between gap-3 rounded-2xl px-3 py-2 hover:bg-swamp-50">
             <div>
-              <div class="font-medium text-slate-900">#{{.TagName}}</div>
-              <div class="text-sm text-slate-500">{{.RecentPosts}} recent posts</div>
+              <div class="font-medium text-swamp-900">#{{.TagName}}</div>
+              <div class="text-sm text-swamp-500">{{.RecentPosts}} recent posts</div>
             </div>
-            <span class="text-emerald-700">→</span>
+            <span class="text-swamp-600">→</span>
           </a>
           {{end}}
         </div>
         {{else}}
-        <div class="mt-3 text-sm text-slate-500">No trending topics yet.</div>
+        <div class="mt-3 text-sm text-swamp-500">No trending topics yet.</div>
         {{end}}
       </div>
     </aside>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // ---- Comment form ----
+      var cf = document.getElementById('comment-form');
+      var cta = document.getElementById('comment-content');
+      var csb = document.getElementById('comment-submit-btn');
+      var ccc = document.getElementById('comment-char-count');
+
+      if (cf && cta && csb && ccc) {
+        function updateCommentUI() {
+          var len = cta.value.trim().length;
+          ccc.textContent = len + '/500';
+          csb.disabled = len === 0 || len > 500;
+        }
+        cta.addEventListener('input', updateCommentUI);
+        updateCommentUI();
+
+        cf.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var content = cta.value.trim();
+          if (!content) return;
+          csb.disabled = true;
+          csb.textContent = 'Posting...';
+          var bp = '{{.BasePath}}';
+          var csrf = document.getElementById('csrf-token-comment').value;
+          var postId = {{.Item.PostID}};
+
+          fetch(bp + '/api/comment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+            body: JSON.stringify({ post_id: postId, content: content })
+          }).then(function(r) { return r.json(); })
+            .then(function(result) {
+              if (result.success) {
+                cta.value = ''; updateCommentUI();
+                var list = document.getElementById('comments-list');
+                var nc = document.getElementById('no-comments');
+                if (nc) nc.remove();
+                var div = document.createElement('div');
+                div.className = 'flex gap-3 border-b border-swamp-50 pb-4 last:border-0 last:pb-0';
+                div.innerHTML = '<img src="/static/avatars/avatar.jpeg" alt="'+result.author_name+'" class="h-10 w-10 rounded-2xl object-cover flex-shrink-0">'+
+                  '<div class="flex-1 min-w-0"><div class="flex items-center gap-2"><span class="font-semibold text-sm text-swamp-900">'+result.author_name+'</span>'+
+                  '<span class="text-xs text-swamp-500">'+result.time_label+'</span></div>'+
+                  '<p class="mt-1 text-sm text-swamp-800 whitespace-pre-wrap">'+content.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p></div>';
+                list.insertBefore(div, list.firstChild);
+              } else { alert(result.error || 'Failed'); }
+            }).catch(function() { alert('Network error'); })
+            .finally(function() { csb.disabled = false; csb.textContent = 'Answer'; });
+        });
+      }
+
+      // ---- Interaction buttons (like / reribb) ----
+      document.querySelectorAll('.interact-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var postId = this.dataset.postId;
+          var action = this.dataset.action;
+          var isLike = action === 'like';
+          if (!postId) return;
+          var countSpan = this.querySelector(isLike ? '.like-count' : '.reribb-count');
+          var svgIcon = this.querySelector('svg');
+          var cur = parseInt(countSpan.textContent) || 0;
+          var wasActive = isLike ? this.classList.contains('text-red-500') : false;
+
+          if (isLike) { this.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', this.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
+          countSpan.textContent = wasActive ? Math.max(0, cur - 1) : cur + 1;
+          btn.disabled = true;
+
+          var bp = '{{.BasePath}}';
+          var csrf = document.getElementById('csrf-token-comment');
+          fetch(bp + '/api/interact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf ? csrf.value : '' },
+            body: JSON.stringify({ post_id: parseInt(postId), type: action })
+          }).then(function(r) { return r.json(); })
+            .then(function(r) {
+              if (r.success) {
+                countSpan.textContent = r.count;
+                if (isLike) {
+                  if (r.created) { btn.classList.add('text-red-500'); svgIcon.setAttribute('fill', 'currentColor'); }
+                  else { btn.classList.remove('text-red-500'); svgIcon.setAttribute('fill', 'none'); }
+                }
+              } else {
+                if (isLike) { btn.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', btn.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
+                countSpan.textContent = cur;
+              }
+            }).catch(function() {
+              if (isLike) { btn.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', btn.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
+              countSpan.textContent = cur;
+            }).finally(function() { btn.disabled = false; });
+        });
+      });
+    });
+  </script>
 </body>
 </html>
 {{end}}

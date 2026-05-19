@@ -34,6 +34,8 @@ type Post struct {
 	Tags             []Tag         `gorm:"many2many:post_tags;joinForeignKey:PostID;JoinReferences:TagID" json:"tags,omitempty"`
 	ViewCount        int64         `gorm:"column:view_count;default:0"`
 	InteractionCount int64         `gorm:"-" json:"interaction_count"`
+	LikeCount        int64         `gorm:"-" json:"like_count"`
+	ReribbCount      int64         `gorm:"-" json:"reribb_count"`
 }
 
 func (Post) TableName() string { return "posts" }

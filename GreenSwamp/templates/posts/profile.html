@@ -29,77 +29,77 @@
     }
   </script>
 </head>
-<body class="bg-slate-100 text-slate-900">
-  <div class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-6 px-4 py-6 lg:grid-cols-4">
+<body class="bg-swamp-50 text-swamp-900">
+  <div class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-0 px-4 py-6 lg:grid-cols-4 lg:divide-x">
     <aside class="space-y-4 lg:col-span-1">
       <div class="sticky top-6 space-y-4">
         {{if .CurrentUser}}
-        <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+        <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
           <div class="flex items-center gap-3">
-            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-100 font-bold text-emerald-700">U</div>
+            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-swamp-100 font-bold text-swamp-700">U</div>
             <div class="min-w-0">
               <div class="font-semibold text-lg leading-tight">{{.CurrentUser.DisplayName}}</div>
-              <div class="text-sm text-slate-500">@{{.CurrentUser.Username}}</div>
+              <div class="text-sm text-swamp-500">@{{.CurrentUser.Username}}</div>
             </div>
           </div>
 
-          <div class="mt-4 rounded-2xl bg-emerald-50 p-4">
-            <div class="text-sm font-medium text-emerald-900">Signed in</div>
-            <div class="mt-1 text-sm text-emerald-800">You can move around the site as an authenticated user.</div>
+          <div class="mt-4 rounded-2xl bg-swamp-50 p-4">
+            <div class="text-sm font-medium text-swamp-900">Signed in</div>
+            <div class="mt-1 text-sm text-swamp-800">You can move around the site as an authenticated user.</div>
           </div>
 
           <div class="mt-4 space-y-2">
-            <a href="{{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Back to feed</a>
-            <a href="/logout?next={{.BasePath}}/profile/{{.Profile.User.Username}}" class="inline-flex w-full justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Logout</a>
+            <a href="{{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">Back to feed</a>
+            <a href="/logout?next={{.BasePath}}/profile/{{.Profile.User.Username}}" class="inline-flex w-full justify-center rounded-full border border-swamp-200 bg-white px-4 py-2.5 text-sm font-semibold text-swamp-700 hover:bg-swamp-50">Logout</a>
           </div>
         </div>
         {{else}}
-        <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+        <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
           <div class="flex items-center gap-3">
-            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-100 font-bold text-slate-700">G</div>
+            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-swamp-100 font-bold text-swamp-700">G</div>
             <div class="min-w-0">
               <div class="font-semibold text-lg leading-tight">Guest</div>
-              <div class="text-sm text-slate-500">Not signed in</div>
+              <div class="text-sm text-swamp-500">Not signed in</div>
             </div>
           </div>
 
-          <p class="mt-4 text-sm leading-6 text-slate-600">
+          <p class="mt-4 text-sm leading-6 text-swamp-600">
             Sign in to use personal actions and quickly return after logout.
           </p>
 
           <div class="mt-4 space-y-2">
-            <a href="/login?next={{.BasePath}}/profile/{{.Profile.User.Username}}" class="inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Login</a>
-            <a href="/register?next={{.BasePath}}/profile/{{.Profile.User.Username}}" class="inline-flex w-full justify-center rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Register</a>
+            <a href="/login?next={{.BasePath}}/profile/{{.Profile.User.Username}}" class="inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">Login</a>
+            <a href="/register?next={{.BasePath}}/profile/{{.Profile.User.Username}}" class="inline-flex w-full justify-center rounded-full border border-swamp-200 bg-white px-4 py-2.5 text-sm font-semibold text-swamp-700 hover:bg-swamp-50">Register</a>
           </div>
         </div>
         {{end}}
 
-        <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+        <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
           <div class="flex items-center gap-3">
             <img src="{{.Profile.Avatar}}" alt="{{.Profile.User.DisplayName}}" class="h-14 w-14 rounded-2xl object-cover">
             <div class="min-w-0">
               <div class="font-semibold text-lg leading-tight">{{.Profile.User.DisplayName}}</div>
-              <div class="text-sm text-slate-500">@{{.Profile.User.Username}}</div>
+              <div class="text-sm text-swamp-500">@{{.Profile.User.Username}}</div>
             </div>
           </div>
 
           <div class="mt-4 flex flex-wrap gap-2">
             {{if .Profile.User.IsActive}}
-            <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Active</span>
+            <span class="rounded-full bg-swamp-100 px-3 py-1 text-xs font-semibold text-swamp-700">Active</span>
             {{else}}
             <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">Inactive</span>
             {{end}}
             <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">{{.Profile.PostCount}} posts</span>
           </div>
 
-          <div class="mt-4 text-sm text-slate-500">
+          <div class="mt-4 text-sm text-swamp-500">
             Joined {{formatTime .Profile.User.CreatedAt}}
           </div>
         </div>
 
-        <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+        <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
           <div class="font-semibold">Bio</div>
-          <p class="mt-3 whitespace-pre-line text-sm leading-6 text-slate-600">
+          <p class="mt-3 whitespace-pre-line text-sm leading-6 text-swamp-600">
             {{if .Profile.Bio}}{{.Profile.Bio}}{{else}}No bio yet.{{end}}
           </p>
         </div>
@@ -107,39 +107,58 @@
     </aside>
 
     <main class="lg:col-span-2">
-      <div class="mb-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 class="text-2xl font-bold">{{.Profile.User.DisplayName}}'s Posts</h2>
-        {{if eq .Profile.PostCount 0}}
-        <p class="mt-4 text-slate-600">No posts yet.</p>
-        {{else}}
-        <p class="mt-2 text-sm text-slate-600">{{.Profile.PostCount}} post{{if ne .Profile.PostCount 1}}s{{end}}</p>
-        {{end}}
+      <!-- Profile Banner -->
+      <div class="relative overflow-hidden rounded-2xl mb-6">
+        <div class="h-48 bg-swamp-800 relative">
+          <div class="absolute inset-0 bg-gradient-to-b from-swamp-600 to-swamp-200"></div>
+          <div class="absolute -bottom-12 left-6 z-9">
+            <div class="w-32 h-32 rounded-full border-4 border-white bg-swamp-800 overflow-hidden shadow-xl">
+              <img src="{{.Profile.Avatar}}" alt="{{.Profile.User.DisplayName}}" class="w-full h-full object-cover">
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-16 pb-6 px-6 bg-white border border-swamp-100 rounded-b-2xl">
+          <div class="flex justify-between items-start">
+            <div>
+              <h1 class="text-2xl font-bold text-swamp-900">{{.Profile.User.DisplayName}}</h1>
+              <p class="text-swamp-500">@{{.Profile.User.Username}}</p>
+            </div>
+            <!-- TODO: Settings/profiles editing not yet implemented -->
+          </div>
+          <div class="mt-4 text-swamp-700 leading-relaxed">
+            {{if .Profile.Bio}}{{.Profile.Bio}}{{else}}No bio yet.{{end}}
+          </div>
+          <div class="mt-3 text-sm text-swamp-500">
+            {{.Profile.PostCount}} post{{if ne .Profile.PostCount 1}}s{{end}}
+          </div>
+        </div>
       </div>
 
       {{range .Profile.Posts}}
-      <article class="mb-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <article class="mb-6 rounded-2xl border border-swamp-100 bg-white p-6 shadow-sm">
         <div class="flex gap-4">
           <img src="{{avatar .User.AvatarURL}}" alt="{{.User.DisplayName}}" class="h-14 w-14 rounded-2xl object-cover">
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
               <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="font-semibold hover:underline">{{.User.DisplayName}}</a>
-              <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="text-sm text-slate-500">@{{.User.Username}}</a>
-              <span class="text-slate-400">·</span>
-              <span class="text-sm text-slate-500">{{.TimeLabel}}</span>
+              <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="text-sm text-swamp-500">@{{.User.Username}}</a>
+              <span class="text-swamp-400">·</span>
+              <span class="text-sm text-swamp-500">{{.TimeLabel}}</span>
             </div>
 
             {{if .IsEvent}}
-            <div class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-              <div class="text-sm font-semibold text-emerald-900">Event</div>
-              <div class="mt-1 text-sm text-emerald-800">{{.EventTimeLabel}} · {{.Event.Location}}</div>
-              {{if .Event.HostOrg}}<div class="text-sm text-emerald-700">Hosted by {{.Event.HostOrg}}</div>{{end}}
+            <div class="mt-3 rounded-2xl border border-swamp-200 bg-swamp-50 p-4">
+              <div class="text-sm font-semibold text-swamp-900">Event</div>
+              <div class="mt-1 text-sm text-swamp-800">{{.EventTimeLabel}} · {{.Event.Location}}</div>
+              {{if .Event.HostOrg}}<div class="text-sm text-swamp-700">Hosted by {{.Event.HostOrg}}</div>{{end}}
             </div>
             {{end}}
 
-            <div class="mt-4 whitespace-pre-wrap text-lg leading-8 text-slate-800">{{.ContentHTML}}</div>
+            <div class="mt-4 whitespace-pre-wrap text-lg leading-8 text-swamp-800">{{.ContentHTML}}</div>
 
             {{if .MediaURL}}
-            <div class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+            <div class="mt-5 overflow-hidden rounded-2xl border border-swamp-200 bg-swamp-50">
               {{if eq .MediaType "image"}}
                 <img src="{{.MediaURL}}" alt="{{if .AltText}}{{.AltText}}{{else}}{{.Content}}{{end}}" class="w-full max-h-[640px] object-cover">
               {{else if eq .MediaType "video"}}
@@ -151,39 +170,92 @@
             </div>
             {{end}}
 
-            <div class="mt-4 flex items-center gap-4">
-              <a href="{{.Nav.Post}}" class="text-sm text-slate-500 hover:text-slate-700">View details</a>
-              {{if .InteractionCount}}
-              <span class="text-sm text-slate-500">{{.InteractionCount}} interactions</span>
-              {{end}}
+            <div class="mt-4 flex items-center gap-6 text-swamp-500">
+              <button class="interact-btn flex items-center space-x-2 hover:text-red-500 transition-colors{{if .LikedByCurrentUser}} text-red-500{{end}}"
+                data-post-id="{{.PostID}}" data-action="like">
+                <svg class="w-5 h-5" fill="{{if .LikedByCurrentUser}}currentColor{{else}}none{{end}}" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg><span class="like-count">{{.LikeCount}}</span>
+              </button>
+              <button class="interact-btn flex items-center space-x-2 hover:text-swamp-600 transition-colors"
+                data-post-id="{{.PostID}}" data-action="reribb">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg><span class="reribb-count">{{.ReribbCount}}</span>
+              </button>
+              <a href="{{.Nav.Post}}" class="flex items-center space-x-2 hover:text-swamp-600 transition-colors text-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg><span>{{if .InteractionCount}}{{.InteractionCount}} interactions{{else}}View{{end}}</span>
+              </a>
             </div>
           </div>
         </div>
       </article>
       {{else}}
-      <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200 text-center">
-        <div class="text-slate-500">No posts from this user.</div>
+      <div class="rounded-2xl bg-white p-6 shadow-sm border border-swamp-100 text-center">
+        <div class="text-swamp-500">No posts from this user.</div>
       </div>
       {{end}}
     </main>
 
     <aside class="space-y-4 lg:col-span-1">
-      <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+      <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
         <div class="font-semibold">Greenswamp</div>
-        <p class="mt-4 text-sm leading-6 text-slate-600">Explore profiles and their posts from the community.</p>
-        <a href="{{.BasePath}}/feed" class="mt-4 inline-flex w-full justify-center rounded-full bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">Back to feed</a>
+        <p class="mt-4 text-sm leading-6 text-swamp-600">Explore profiles and their posts from the community.</p>
+        <a href="{{.BasePath}}/feed" class="mt-4 inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">Back to feed</a>
       </div>
 
-      <div class="rounded-3xl bg-white p-5 shadow-sm border border-slate-200">
+      <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
         <div class="font-semibold">Trending Tags</div>
         <div class="mt-3 space-y-2">
           {{range .Trending}}
-          <a href="{{$.BasePath}}/ponds/{{.TagName}}" class="inline-block rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-700 hover:bg-slate-200">#{{.TagName}}</a>
+          <a href="{{$.BasePath}}/ponds/{{.TagName}}" class="inline-block rounded-full bg-swamp-100 px-3 py-1 text-sm text-swamp-700 hover:bg-swamp-200">#{{.TagName}}</a>
           {{end}}
         </div>
       </div>
     </aside>
   </div>
+
+  <script>
+    document.querySelectorAll('.interact-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var postId = this.dataset.postId;
+        var action = this.dataset.action;
+        var isLike = action === 'like';
+        if (!postId) return;
+        var countSpan = this.querySelector(isLike ? '.like-count' : '.reribb-count');
+        var svgIcon = this.querySelector('svg');
+        var cur = parseInt(countSpan.textContent) || 0;
+        var wasActive = isLike ? this.classList.contains('text-red-500') : false;
+
+        if (isLike) { this.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', this.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
+        countSpan.textContent = wasActive ? Math.max(0, cur - 1) : cur + 1;
+        btn.disabled = true;
+
+        fetch('{{.BasePath}}/api/interact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ post_id: parseInt(postId), type: action })
+        }).then(function(r) { return r.json(); })
+          .then(function(r) {
+            if (r.success) {
+              countSpan.textContent = r.count;
+              if (isLike) {
+                if (r.created) { btn.classList.add('text-red-500'); svgIcon.setAttribute('fill', 'currentColor'); }
+                else { btn.classList.remove('text-red-500'); svgIcon.setAttribute('fill', 'none'); }
+              }
+            } else {
+              if (isLike) { btn.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', btn.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
+              countSpan.textContent = cur;
+            }
+          }).catch(function() {
+            if (isLike) { btn.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', btn.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
+            countSpan.textContent = cur;
+          }).finally(function() { btn.disabled = false; });
+      });
+    });
+  </script>
 </body>
 </html>
 {{end}}

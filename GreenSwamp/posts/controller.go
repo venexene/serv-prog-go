@@ -3,12 +3,17 @@ package posts
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	csrf "github.com/gorilla/csrf"
 	account "github.com/venexene/serv-prog-go/greenswamp/account"
@@ -51,10 +56,12 @@ func (c *Controller) handleFeed(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userInteractions := c.userInteractionsForPosts(r, posts)
+
 	data := FeedPage{
 		Title:       "Greenswamp · Feed",
 		BasePath:    c.basePath,
-		Items:       c.buildItems(posts),
+		Items:       c.buildItems(posts, userInteractions),
 		Trending:    c.loadTrending(r.Context()),
 		CurrentUser: c.currentUser(r),
 		CSRFToken:   csrf.Token(r),
@@ -85,11 +92,13 @@ func (c *Controller) handlePond(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userInteractions := c.userInteractionsForPosts(r, posts)
+
 	data := FeedPage{
 		Title:       "Greenswamp · #" + tag,
 		BasePath:    c.basePath,
 		Tag:         tag,
-		Items:       c.buildItems(posts),
+		Items:       c.buildItems(posts, userInteractions),
 		Trending:    c.loadTrending(r.Context()),
 		CurrentUser: c.currentUser(r),
 	}
@@ -117,9 +126,11 @@ func (c *Controller) handleProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userInteractions := c.userInteractionsForPosts(r, posts)
+
 	profile := ProfilePage{
 		User:      *user,
-		Posts:     c.buildItems(posts),
+		Posts:     c.buildItems(posts, userInteractions),
 		PostCount: len(posts),
 		Avatar:    avatarOrFallback(user.AvatarURL),
 		Bio:       bioOrEmpty(user.Bio),
@@ -156,21 +167,43 @@ func (c *Controller) handlePostDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	item := buildFeedItem(*post, c.basePath)
+	userInteractions := c.userInteractionsForPosts(r, []Post{*post})
+	item := buildFeedItem(*post, c.basePath, userInteractions)
+
+	comments, _ := c.repo.ListCommentsByPost(r.Context(), uint(postID))
+	commentItems := make([]CommentItem, 0, len(comments))
+	for _, cm := range comments {
+		author, err := c.repo.GetUserByID(r.Context(), cm.UserID)
+		authorName := "Unknown"
+		authorAvatar := "/static/avatars/avatar.jpeg"
+		if err == nil && author != nil {
+			authorName = author.DisplayName
+			authorAvatar = avatarOrFallback(author.AvatarURL)
+		}
+		commentItems = append(commentItems, CommentItem{
+			Interaction:  cm,
+			AuthorName:   authorName,
+			AuthorAvatar: authorAvatar,
+			TimeLabel:    formatTime(cm.CreatedAt),
+		})
+	}
+
 	data := PostPageData{
-		Title:    "Post #" + uintToString(post.PostID),
-		BasePath: c.basePath,
-		Item:     item,
-		Trending: c.loadTrending(r.Context()),
+		Title:     "Post #" + uintToString(post.PostID),
+		BasePath:  c.basePath,
+		Item:      item,
+		Trending:  c.loadTrending(r.Context()),
+		Comments:  commentItems,
+		CSRFToken: csrf.Token(r),
 	}
 
 	c.execute(w, "post.html", data)
 }
 
-func (c *Controller) buildItems(posts []Post) []FeedItem {
+func (c *Controller) buildItems(posts []Post, userInteractions map[uint][]string) []FeedItem {
 	items := make([]FeedItem, 0, len(posts))
 	for _, p := range posts {
-		items = append(items, buildFeedItem(p, c.basePath))
+		items = append(items, buildFeedItem(p, c.basePath, userInteractions))
 	}
 	return items
 }
@@ -200,6 +233,140 @@ func (c *Controller) currentUser(r *http.Request) *account.IdentityUser {
 	}
 
 	return user
+}
+
+func (c *Controller) userInteractionsForPosts(r *http.Request, posts []Post) map[uint][]string {
+	user := c.currentUser(r)
+	if user == nil || len(posts) == 0 {
+		return nil
+	}
+
+	postIDs := make([]uint, len(posts))
+	for i, p := range posts {
+		postIDs[i] = p.PostID
+	}
+
+	interactions, err := c.repo.GetUserInteractions(r.Context(), user.UserID, postIDs)
+	if err != nil {
+		c.logger.Printf("get user interactions: %v", err)
+		return nil
+	}
+	return interactions
+}
+
+func (c *Controller) handleInteract(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	currentUser := c.currentUser(r)
+	if currentUser == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Unauthorized"})
+		return
+	}
+
+	var req InteractionRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request body"})
+		return
+	}
+
+	if req.PostID == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "post_id is required"})
+		return
+	}
+
+	if req.Type != "like" && req.Type != "reribb" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "type must be 'like' or 'reribb'"})
+		return
+	}
+
+	created, count, err := c.repo.ToggleInteraction(r.Context(), currentUser.UserID, req.PostID, req.Type)
+	if err != nil {
+		c.logger.Printf("toggle interaction: %v", err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to process interaction"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"created": created,
+		"count":   count,
+		"type":    req.Type,
+	})
+}
+
+func (c *Controller) handleComment(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Method not allowed"})
+		return
+	}
+
+	currentUser := c.currentUser(r)
+	if currentUser == nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Unauthorized"})
+		return
+	}
+
+	var req CommentRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request body"})
+		return
+	}
+
+	if req.PostID == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "post_id is required"})
+		return
+	}
+
+	content := strings.TrimSpace(req.Content)
+	if content == "" {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Content cannot be empty"})
+		return
+	}
+
+	comment, err := c.repo.CreateComment(r.Context(), currentUser.UserID, req.PostID, content)
+	if err != nil {
+		c.logger.Printf("create comment: %v", err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to create comment"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success":      true,
+		"comment_id":   comment.InteractionID,
+		"author_name":  currentUser.DisplayName,
+		"time_label":   formatTime(comment.CreatedAt),
+	})
 }
 
 func (c *Controller) execute(w http.ResponseWriter, name string, data any) {
@@ -235,7 +402,8 @@ func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
+	// Accept up to 10 MB of multipart form data
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid form data"})
@@ -250,6 +418,42 @@ func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var mediaURL, mediaType, altText *string
+
+	file, header, err := r.FormFile("media")
+	if err == nil {
+		defer file.Close()
+
+		// Determine media type from MIME
+		mime := header.Header.Get("Content-Type")
+		if strings.HasPrefix(mime, "image/") {
+			mt := "image"
+			mediaType = &mt
+
+			// Save file to static/uploads/
+			uploadDir := "static/uploads"
+			if err := os.MkdirAll(uploadDir, 0755); err != nil {
+				c.logger.Printf("create upload dir: %v", err)
+			} else {
+				ext := filepath.Ext(header.Filename)
+				if ext == "" {
+					ext = ".jpg"
+				}
+				filename := fmt.Sprintf("%d_%s%s", time.Now().UnixNano(), randomString(8), ext)
+				filePath := filepath.Join(uploadDir, filename)
+
+				dst, err := os.Create(filePath)
+				if err == nil {
+					defer dst.Close()
+					if _, err := io.Copy(dst, file); err == nil {
+						url := "/static/uploads/" + filename
+						mediaURL = &url
+					}
+				}
+			}
+		}
+	}
+
 	post, err := c.repo.CreatePost(r.Context(), currentUser.UserID, content, "post")
 	if err != nil {
 		c.logger.Printf("failed to create post: %v", err)
@@ -257,6 +461,11 @@ func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to create post"})
 		return
+	}
+
+	// Update post with media info if file was uploaded
+	if mediaURL != nil {
+		c.repo.UpdatePostMedia(r.Context(), post.PostID, mediaURL, mediaType, altText)
 	}
 
 	w.Header().Set("Content-Type", "application/json")

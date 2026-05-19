@@ -36,6 +36,8 @@ func RegisterRoutes(mux *http.ServeMux, db *gorm.DB, logger *log.Logger, cfg Con
 	mux.HandleFunc(cfg.BasePath+"/ponds/", ctrl.handlePond)
 	mux.HandleFunc(cfg.BasePath+"/ponds", ctrl.handlePondsIndex)
 	mux.HandleFunc(cfg.BasePath+"/api/create", ctrl.handleCreatePost)
+	mux.HandleFunc(cfg.BasePath+"/api/interact", ctrl.handleInteract)
+	mux.HandleFunc(cfg.BasePath+"/api/comment", ctrl.handleComment)
 	mux.HandleFunc(cfg.BasePath+"/feed", ctrl.handleFeed)
 	mux.HandleFunc(cfg.BasePath+"/", ctrl.handleIndex)
 	mux.HandleFunc(cfg.BasePath, ctrl.handleIndex)

@@ -29,6 +29,10 @@ func main() {
 		logger.Fatal(err)
 	}
 
+	if err := account.AutoMigrate(db); err != nil {
+		logger.Fatal(err)
+	}
+
 	app := internal.CreateApp(cfg, logger)
 
 	mux := http.NewServeMux()

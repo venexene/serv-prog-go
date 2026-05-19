@@ -133,27 +133,39 @@ func (r *Repository) attachInteractionCounts(ctx context.Context, posts []Post) 
 		return posts, nil
 	}
 
-	var rows []struct {
-		PostID uint
-		Count  int64
+	type countRow struct {
+		PostID          uint
+		InteractionType string
+		Count           int64
 	}
 
+	var rows []countRow
 	if err := r.db.WithContext(ctx).
 		Model(&Interaction{}).
-		Select("post_id, COUNT(*) as count").
+		Select("post_id, interaction_type, COUNT(*) as count").
 		Where("post_id IN ?", extractPostIDs(posts)).
-		Group("post_id").
+		Group("post_id, interaction_type").
 		Scan(&rows).Error; err != nil {
 		return nil, err
 	}
 
-	counts := make(map[uint]int64, len(rows))
-	for _, row := range rows {
-		counts[row.PostID] = row.Count
-	}
-
 	for i := range posts {
-		posts[i].InteractionCount = counts[posts[i].PostID]
+		var total, likes, reribbs int64
+		for _, row := range rows {
+			if row.PostID != posts[i].PostID {
+				continue
+			}
+			total += row.Count
+			switch row.InteractionType {
+			case "like":
+				likes = row.Count
+			case "reribb":
+				reribbs = row.Count
+			}
+		}
+		posts[i].InteractionCount = total
+		posts[i].LikeCount = likes
+		posts[i].ReribbCount = reribbs
 	}
 
 	return posts, nil
@@ -233,6 +245,118 @@ func (r *Repository) CreatePost(ctx context.Context, userID uint, content string
 	return post, nil
 }
 
+// UpdatePostMedia sets media fields on an existing post.
+func (r *Repository) UpdatePostMedia(ctx context.Context, postID uint, mediaURL, mediaType, altText *string) error {
+	return r.db.WithContext(ctx).
+		Model(&Post{}).
+		Where("post_id = ?", postID).
+		Updates(map[string]interface{}{
+			"media_url":  mediaURL,
+			"media_type": mediaType,
+			"alt_text":   altText,
+		}).Error
+}
+
+// ToggleInteraction creates or removes a like/reribb for a post.
+// Returns: created (true if added, false if removed), new count, error.
+func (r *Repository) ToggleInteraction(ctx context.Context, userID, postID uint, interactionType string) (created bool, count int64, err error) {
+	var existing Interaction
+	err = r.db.WithContext(ctx).
+		Where("user_id = ? AND post_id = ? AND interaction_type = ?", userID, postID, interactionType).
+		First(&existing).Error
+
+	if err == nil {
+		if delErr := r.db.WithContext(ctx).Delete(&existing).Error; delErr != nil {
+			return false, 0, fmt.Errorf("delete interaction: %w", delErr)
+		}
+		count, err = r.CountByType(ctx, postID, interactionType)
+		return false, count, err
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, 0, fmt.Errorf("find interaction: %w", err)
+	}
+
+	interaction := Interaction{
+		UserID:          userID,
+		PostID:          postID,
+		InteractionType: interactionType,
+	}
+	if createErr := r.db.WithContext(ctx).Create(&interaction).Error; createErr != nil {
+		return false, 0, fmt.Errorf("create interaction: %w", createErr)
+	}
+
+	count, err = r.CountByType(ctx, postID, interactionType)
+	return true, count, err
+}
+
+// GetUserInteractions returns a map of postID -> list of interaction types for the given user.
+func (r *Repository) GetUserInteractions(ctx context.Context, userID uint, postIDs []uint) (map[uint][]string, error) {
+	if len(postIDs) == 0 {
+		return nil, nil
+	}
+
+	var rows []Interaction
+	if err := r.db.WithContext(ctx).
+		Where("user_id = ? AND post_id IN ?", userID, postIDs).
+		Find(&rows).Error; err != nil {
+		return nil, fmt.Errorf("get user interactions: %w", err)
+	}
+
+	result := make(map[uint][]string, len(postIDs))
+	for _, row := range rows {
+		result[row.PostID] = append(result[row.PostID], row.InteractionType)
+	}
+	return result, nil
+}
+
+// CountByType returns the number of interactions of a specific type for a post.
+func (r *Repository) CountByType(ctx context.Context, postID uint, interactionType string) (int64, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&Interaction{}).
+		Where("post_id = ? AND interaction_type = ?", postID, interactionType).
+		Count(&count).Error; err != nil {
+		return 0, fmt.Errorf("count interactions: %w", err)
+	}
+	return count, nil
+}
+
+// CreateComment adds a comment interaction with content. Unlike likes/reribbs, comments are always additive.
+func (r *Repository) CreateComment(ctx context.Context, userID, postID uint, content string) (*Interaction, error) {
+	comment := &Interaction{
+		UserID:          userID,
+		PostID:          postID,
+		InteractionType: "comment",
+		Content:         &content,
+	}
+	if err := r.db.WithContext(ctx).Create(comment).Error; err != nil {
+		return nil, fmt.Errorf("create comment: %w", err)
+	}
+	return comment, nil
+}
+
+// ListCommentsByPost returns all comments for a post, newest first, with user info.
+func (r *Repository) ListCommentsByPost(ctx context.Context, postID uint) ([]Interaction, error) {
+	var comments []Interaction
+	if err := r.db.WithContext(ctx).
+		Where("post_id = ? AND interaction_type = ?", postID, "comment").
+		Order("created_at DESC").
+		Find(&comments).Error; err != nil {
+		return nil, fmt.Errorf("list comments: %w", err)
+	}
+	return comments, nil
+}
+
+// GetUserByID returns a user by their ID (for comment author display).
+func (r *Repository) GetUserByID(ctx context.Context, userID uint) (*User, error) {
+	var u User
+	if err := r.db.WithContext(ctx).First(&u, "user_id = ?", userID).Error; err != nil {
+		return nil, err
+	}
+	return &u, nil
+}
+
 func ensureTrendingView(db *gorm.DB) error {
 	const q = `
 	CREATE VIEW IF NOT EXISTS trending_ponds AS
@@ -240,8 +364,10 @@ func ensureTrendingView(db *gorm.DB) error {
 	FROM tags t
 	JOIN post_tags pt ON t.tag_id = pt.tag_id
 	JOIN posts p ON pt.post_id = p.post_id
-	WHERE p.created_at > datetime('now', '-1 day')
+	WHERE p.created_at > datetime('now', '-7 days')
 	GROUP BY t.tag_id, t.tag_name
 	`
+	// Drop old 1-day view if it exists from a previous migration
+	db.Exec("DROP VIEW IF EXISTS trending_ponds")
 	return db.Exec(q).Error
 }

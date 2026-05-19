@@ -1,62 +1,129 @@
 {{define "register.html"}}
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Register</title>
+  <title>Register - Greenswamp</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            swamp: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-slate-100 text-slate-900">
-  <div class="min-h-screen flex items-center justify-center px-4">
-    <div class="w-full max-w-md rounded-3xl bg-white p-8 shadow-sm border border-slate-200">
-      <h1 class="text-3xl font-bold tracking-tight">Register</h1>
-      <p class="mt-2 text-sm text-slate-500">Создайте новый аккаунт.</p>
+<body class="bg-swamp-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-16">
+      <div class="flex items-center justify-center space-x-3 mb-6">
+        <span class="text-4xl font-bold text-swamp-900">Greenswamp</span>
+      </div>
+      <p class="text-lg text-swamp-800">Join the pond community</p>
+    </div>
 
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8 sm:p-12 border border-swamp-100">
       {{if .Error}}
-      <div class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+      <div class="mb-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
         {{.Error}}
       </div>
       {{end}}
 
-      <form class="mt-6 space-y-4" method="POST" action="/register?next={{.Next}}">
+      <form class="space-y-6" method="POST" action="/register?next={{.Next}}">
         {{.CSRFField}}
         <input type="hidden" name="next" value="{{.Next}}">
 
-        <div>
-          <label class="mb-1 block text-sm font-medium">Username</label>
-          <input name="username" value="{{.Username}}" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 outline-none focus:border-emerald-500" required>
+        <div class="space-y-2">
+          <label class="block text-base font-semibold text-swamp-900">Username</label>
+          <input name="username" value="{{.Username}}" required
+            class="mt-1 block w-full rounded-xl bg-white px-5 py-3.5
+                   border border-swamp-200 focus:border-swamp-400
+                   focus:ring-2 focus:ring-swamp-200 placeholder-slate-400
+                   text-slate-900 shadow-sm"
+            placeholder="your_username">
         </div>
 
-        <div>
-          <label class="mb-1 block text-sm font-medium">Display name</label>
-          <input name="display_name" value="{{.DisplayName}}" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 outline-none focus:border-emerald-500">
+        <div class="space-y-2">
+          <label class="block text-base font-semibold text-swamp-900">Display name</label>
+          <input name="display_name" value="{{.DisplayName}}"
+            class="mt-1 block w-full rounded-xl bg-white px-5 py-3.5
+                   border border-swamp-200 focus:border-swamp-400
+                   focus:ring-2 focus:ring-swamp-200 placeholder-slate-400
+                   text-slate-900 shadow-sm"
+            placeholder="Your Name">
         </div>
 
-        <div>
-          <label class="mb-1 block text-sm font-medium">Email</label>
-          <input type="email" name="email" value="{{.Email}}" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 outline-none focus:border-emerald-500" required>
+        <div class="space-y-2">
+          <label class="block text-base font-semibold text-swamp-900">Email</label>
+          <input type="email" name="email" value="{{.Email}}" required
+            class="mt-1 block w-full rounded-xl bg-white px-5 py-3.5
+                   border border-swamp-200 focus:border-swamp-400
+                   focus:ring-2 focus:ring-swamp-200 placeholder-slate-400
+                   text-slate-900 shadow-sm"
+            placeholder="you@example.com">
         </div>
 
-        <div>
-          <label class="mb-1 block text-sm font-medium">Password</label>
-          <input type="password" name="password" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 outline-none focus:border-emerald-500" required>
+        <div class="space-y-2">
+          <label class="block text-base font-semibold text-swamp-900">Password</label>
+          <input type="password" name="password" required
+            class="mt-1 block w-full rounded-xl bg-white px-5 py-3.5
+                   border border-swamp-200 focus:border-swamp-400
+                   focus:ring-2 focus:ring-swamp-200 placeholder-slate-400
+                   text-slate-900 shadow-sm"
+            placeholder="••••••••">
         </div>
 
-        <div>
-          <label class="mb-1 block text-sm font-medium">Confirm password</label>
-          <input type="password" name="password_confirm" class="w-full rounded-2xl border border-slate-300 px-4 py-2.5 outline-none focus:border-emerald-500" required>
+        <div class="space-y-2">
+          <label class="block text-base font-semibold text-swamp-900">Confirm password</label>
+          <input type="password" name="password_confirm" required
+            class="mt-1 block w-full rounded-xl bg-white px-5 py-3.5
+                   border border-swamp-200 focus:border-swamp-400
+                   focus:ring-2 focus:ring-swamp-200 placeholder-slate-400
+                   text-slate-900 shadow-sm"
+            placeholder="••••••••">
         </div>
 
-        <button type="submit" class="w-full rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-700">
-          Create account
+        <button type="submit"
+          class="w-full bg-gradient-to-br from-swamp-500 to-swamp-600 text-white
+                 py-4 px-6 rounded-xl hover:from-swamp-600 hover:to-swamp-700
+                 focus:ring-2 focus:ring-swamp-400 font-semibold
+                 transition-all duration-200 shadow-lg">
+          Create Account
         </button>
-      </form>
 
-      <p class="mt-4 text-sm text-slate-600">
-        Уже есть аккаунт?
-        <a class="font-semibold text-emerald-700 hover:text-emerald-800" href="/login?next={{.Next}}">Login</a>
-      </p>
+        <p class="text-center text-swamp-700 mt-8">
+          Already have an account?
+          <a href="/login?next={{.Next}}" class="font-semibold text-swamp-800 hover:text-swamp-900 underline">
+            Log in here
+          </a>
+        </p>
+      </form>
+    </div>
+
+    <div class="mt-16 text-center">
+      <div class="flex items-center justify-center space-x-4 text-swamp-700">
+        <a href="/privacy" class="hover:text-swamp-900 hover:underline">Privacy</a>
+        <span class="text-swamp-500">•</span>
+        <a href="/tos" class="hover:text-swamp-900 hover:underline">Terms</a>
+        <span class="text-swamp-500">•</span>
+        <a href="/contact" class="hover:text-swamp-900 hover:underline">Contact</a>
+      </div>
     </div>
   </div>
 </body>
