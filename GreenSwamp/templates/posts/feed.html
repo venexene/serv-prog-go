@@ -1,281 +1,366 @@
 {{define "feed.html"}}
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{.Title}}</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            swamp: {
-              50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
-              400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
-              800: '#166534', 900: '#14532d',
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+   <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        swamp: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
             }
-          }
         }
-      }
-    }
-  </script>
+    </script>
 </head>
-<body class="bg-swamp-50 text-swamp-900">
-  <div class="mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-0 px-4 py-6 lg:grid-cols-4 lg:divide-x">
-    <aside class="space-y-4 lg:col-span-1">
-      {{if .CurrentUser}}
-      <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
-        <div class="flex items-center gap-3">
-          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-swamp-100 font-bold text-swamp-700">U</div>
-          <div><div class="font-semibold">{{.CurrentUser.DisplayName}}</div><div class="text-sm text-swamp-500">@{{.CurrentUser.Username}}</div></div>
-        </div>
-        <div class="mt-4 rounded-2xl bg-swamp-50 p-4">
-          <div class="text-sm font-medium text-swamp-900">You are signed in</div>
-          <div class="mt-1 text-sm text-swamp-800">Welcome back to Greenswamp.</div>
-        </div>
-        <div class="mt-4 space-y-2">
-          <a href="{{.BasePath}}/profile/{{.CurrentUser.Username}}" class="inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">My profile</a>
-          <a href="/logout?next={{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full border border-swamp-200 bg-white px-4 py-2.5 text-sm font-semibold text-swamp-700 hover:bg-swamp-50">Logout</a>
-        </div>
-      </div>
-      {{else}}
-      <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
-        <div class="flex items-center gap-3">
-          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-swamp-100 font-bold text-swamp-700">G</div>
-          <div><div class="font-semibold">Guest mode</div><div class="text-sm text-swamp-500">Login or register</div></div>
-        </div>
-        <p class="mt-4 text-sm leading-6 text-swamp-600">Sign in to post ribbits and interact with the community.</p>
-        <div class="mt-4 space-y-2">
-          <a href="/login?next={{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">Login</a>
-          <a href="/register?next={{.BasePath}}/feed" class="inline-flex w-full justify-center rounded-full border border-swamp-200 bg-white px-4 py-2.5 text-sm font-semibold text-swamp-700 hover:bg-swamp-50">Register</a>
-        </div>
-      </div>
-      {{end}}
-      <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
-        <div class="font-semibold">Greenswamp</div>
-        <p class="mt-4 text-sm leading-6 text-swamp-600">Fresh feed, tags, profiles and detailed post cards.</p>
-        <a href="/" class="mt-4 inline-flex w-full justify-center rounded-full bg-swamp-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-swamp-600">Back to landing</a>
-      </div>
-    </aside>
+<body class="bg-swamp-50">
 
-    <main class="lg:col-span-2">
-      {{if .CurrentUser}}
-      <div class="mb-6 rounded-2xl border border-swamp-100 bg-white p-6 shadow-sm">
-        <div class="flex gap-4">
-          <img src="/static/avatars/avatar.jpeg" alt="{{.CurrentUser.DisplayName}}" class="h-12 w-12 rounded-2xl object-cover">
-          <div class="flex-1">
-            <form id="create-post-form" class="space-y-4" enctype="multipart/form-data">
-              <input type="hidden" id="csrf-token" name="gorilla.csrf.Token" value="{{.CSRFToken}}">
-              <textarea id="post-content" name="content" placeholder="What's happening?"
-                class="w-full resize-none border-0 bg-transparent text-lg placeholder-swamp-500 focus:outline-none focus:ring-0"
-                rows="3" maxlength="500" required></textarea>
-              <div id="media-preview" class="hidden relative mt-2">
-                <img id="media-preview-img" src="" class="w-full max-h-48 rounded-xl object-cover">
-                <button type="button" id="media-remove-btn" class="absolute top-2 right-2 bg-slate-800/60 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-slate-800/80 text-sm">✕</button>
-              </div>
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <label class="cursor-pointer text-swamp-500 hover:text-swamp-600 transition-colors" title="Attach image">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <input type="file" id="media-file" name="media" accept="image/*" class="hidden">
-                  </label>
-                  <div class="text-sm text-swamp-500" id="char-count">0/500</div>
-                </div>
-                <button type="submit" id="post-submit-btn"
-                  class="rounded-full bg-swamp-500 px-6 py-2 text-sm font-semibold text-white hover:bg-swamp-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Ribbit</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      {{end}}
+    <!-- Main Feed Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!--<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">-->
+		<div class="grid grid-cols-1 lg:grid-cols-4 gap-0 lg:divide-x sm:divide-y lg:h-[calc(100vb-4rem)]">
+            <!-- Left Sidebar -->
+            <div class="lg:col-span-1 bg-white order-1">          
+                <div class="p-6 space-y-4"> 
+                    <div class="flex items-center space-x-2">
+                        <img src="green-toad-logo.svg" alt="Greenswamp Logo" class="h-8 w-8">
+                        <span class="text-2xl font-bold text-swamp-600">Greenswamp</span>
+                    </div>
+                   {{if .CurrentUser}}
+                   <div class="flex items-center space-x-3">
+                        <img src="/static/avatars/avatar.jpeg" alt="{{.CurrentUser.DisplayName}}" class="h-10 w-10 rounded-full">
+                        <div>
+                            <div class="font-semibold text-swamp-900">{{.CurrentUser.DisplayName}}</div>
+                            <div class="text-sm text-swamp-500">@{{.CurrentUser.Username}}</div>
+                        </div>
+                    </div>
+                   <div class="space-x-2"> 
+                    <a href="{{.BasePath}}/profile/{{.CurrentUser.Username}}">
+                        <button class="bg-swamp-500 font-semibold text-white px-4 py-2 rounded-full hover:bg-swamp-600">
+                            My profile
+                        </button>
+                    </a>
+                    <a href="/logout?next={{.BasePath}}/feed">
+                    <button class="bg-slate-200 font-semibold text-slate-900 px-4 py-2 rounded-full hover:bg-slate-300">
+                        Logout
+                    </button>
+                    </a>
+                    </div>
+                   {{else}}
+                   <div class="space-x-2"> 
+                    <a href="/register?next={{.BasePath}}/feed">
+                        <button class="bg-swamp-500 font-semibold text-white px-4 py-2 rounded-full hover:bg-swamp-600">
+                            Register
+                        </button>
+                    </a>
+                    <a href="/login?next={{.BasePath}}/feed">
+                    <button class="bg-slate-200 font-semibold text-slate-900 px-4 py-2 rounded-full hover:bg-slate-300">
+                        Login
+                    </button>
+                    </a>
+                    </div>
+                   {{end}}
+                </div>		
 
-      {{range .Items}}
-      <article class="mb-6 rounded-2xl border border-swamp-100 bg-white shadow-sm{{if .IsEvent}} border-l-4 border-l-swamp-400{{end}}" data-post-id="{{.PostID}}">
-        {{if .IsEvent}}<div class="px-6 pt-4 flex items-center gap-2 text-swamp-600 text-sm font-semibold">📅 Event</div>{{end}}
-        <div class="p-6{{if .IsEvent}} pt-2{{end}}">
-          <div class="flex gap-4">
-            <img src="{{avatar .User.AvatarURL}}" alt="{{.User.DisplayName}}" class="h-14 w-14 rounded-2xl object-cover">
-            <div class="min-w-0 flex-1">
-              <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="font-semibold hover:underline">{{.User.DisplayName}}</a>
-                <a href="{{$.BasePath}}/profile/{{.User.Username}}" class="text-sm text-swamp-500">@{{.User.Username}}</a>
-                <span class="text-swamp-400">·</span>
-                <span class="text-sm text-swamp-500">{{.TimeLabel}}</span>
-              </div>
-              {{if .IsEvent}}
-              <div class="mt-3 rounded-2xl border border-swamp-200 bg-swamp-50 p-4">
-                <div class="text-sm text-swamp-800">{{.EventTimeLabel}} · {{.Event.Location}}</div>
-                {{if .Event.HostOrg}}<div class="text-sm text-swamp-700">Hosted by {{.Event.HostOrg}}</div>{{end}}
-              </div>
-              {{end}}
-              <div class="mt-4 whitespace-pre-wrap text-lg leading-8 text-swamp-800">{{.ContentHTML}}</div>
-              {{if .MediaURL}}
-              <div class="mt-5 overflow-hidden rounded-2xl border border-swamp-200 bg-swamp-50">
-                {{if eq .MediaType "image"}}<img src="{{.MediaURL}}" alt="{{if .AltText}}{{.AltText}}{{else}}{{.Content}}{{end}}" class="w-full max-h-[640px] object-cover">
-                {{else if eq .MediaType "video"}}<video controls class="w-full max-h-[640px]"><source src="{{.MediaURL}}" type="video/mp4"></video>{{end}}
-              </div>
-              {{end}}
-              <div class="mt-4 flex items-center gap-6 text-swamp-500">
-                <button class="interact-btn flex items-center space-x-2 hover:text-red-500 transition-colors{{if .LikedByCurrentUser}} text-red-500{{end}}"
-                  data-post-id="{{.PostID}}" data-action="like">
-                  <svg class="w-5 h-5" fill="{{if .LikedByCurrentUser}}currentColor{{else}}none{{end}}" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                  </svg><span class="like-count">{{.LikeCount}}</span>
-                </button>
-                <button class="interact-btn flex items-center space-x-2 hover:text-swamp-600 transition-colors"
-                  data-post-id="{{.PostID}}" data-action="reribb">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                  </svg><span class="reribb-count">{{.ReribbCount}}</span>
-                </button>
-                <a href="{{.Nav.Post}}" class="flex items-center space-x-2 hover:text-swamp-600 transition-colors">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                  </svg><span>{{if .InteractionCount}}{{.InteractionCount}}{{else}}View{{end}}</span>
-                </a>
-              </div>
+                <!-- Quick Links -->
             </div>
-          </div>
+
+            <!-- Main Feed -->
+            <div class="lg:col-span-2 divide-y order-3">
+                {{if .CurrentUser}}
+                <!-- Post Creation Card -->
+                <div class="bg-white shadow-sm p-6">
+                    <div class="flex items-start space-x-3">
+                        <img src="/static/avatars/avatar.jpeg" alt="{{.CurrentUser.DisplayName}}" class="w-16 h-16 rounded-full">
+                        <div class="flex-1">
+                            <form id="create-post-form" enctype="multipart/form-data">
+                                <input type="hidden" id="csrf-token" name="gorilla.csrf.Token" value="{{.CSRFToken}}">
+                                <textarea id="post-content" name="content" placeholder="What's happening?"
+                                    class="w-full resize-none border-0 bg-transparent text-lg placeholder-swamp-500 focus:outline-none focus:ring-0"
+                                    rows="3" maxlength="500" required></textarea>
+                                <div id="media-preview" class="hidden relative mt-2">
+                                    <img id="media-preview-img" src="" class="w-full max-h-48 rounded-xl object-cover">
+                                    <button type="button" id="media-remove-btn" class="absolute top-2 right-2 bg-slate-800/60 text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-slate-800/80 text-sm">&times;</button>
+                                </div>
+                                <div class="mt-4 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <label class="cursor-pointer text-swamp-500 hover:text-swamp-600 transition-colors" title="Attach image">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            <input type="file" id="media-file" name="media" accept="image/*" class="hidden">
+                                        </label>
+                                        <div class="text-sm text-swamp-500" id="char-count">0/500</div>
+                                    </div>
+                                    <button type="submit" id="post-submit-btn"
+                                        class="rounded-full bg-swamp-500 px-6 py-2 text-sm font-semibold text-white hover:bg-swamp-600 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Ribbit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {{end}}
+
+                {{range .Items}}
+                {{if .IsEvent}}
+                <!-- Event Post -->
+                <div class="bg-white shadow-sm p-6 border-l-4 border-l-swamp-400" data-post-id="{{.PostID}}">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 bg-swamp-100 rounded-full flex items-center justify-center">
+                            <svg class="text-swamp-600" fill="currentColor" viewBox="-43.32 -43.32 327.29 327.29" enable-background="new 0 0 240.646 240.646"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path d="m218.787,119.069c-7.552-18.233-23.021-35.615-43.56-48.944-5.611-3.642-11.369-6.826-17.027-9.48 0.001-0.074 0.005-0.148 0.005-0.222 0-15.537-9.405-28.913-22.818-34.749l12.87-12.87c2.929-2.929 2.929-7.678 0-10.606-2.93-2.929-7.678-2.929-10.607,0l-17.237,17.237-17.068-17.068c-2.93-2.929-7.678-2.929-10.607-8.88178e-16-2.929,2.929-2.929,7.678 0,10.606l12.644,12.644c-13.478,5.809-22.94,19.221-22.94,34.805 0,0.074 0.004,0.148 0.005,0.223-5.659,2.654-11.417,5.839-17.029,9.481-20.537,13.329-36.006,30.711-43.558,48.943-8.021,19.364 1.207,41.645 20.573,49.667 4.648,1.925 9.538,2.901 14.534,2.901 6.008-0.001 11.758-1.412 16.9-3.96 9.77,16.056 27.176,26.038 46.456,26.038 19.279,0 36.686-9.981 46.456-26.036 5.142,2.546 10.893,3.958 16.901,3.958 4.996,0 9.886-0.976 14.534-2.901 19.366-8.022 28.595-30.303 20.573-49.667zm-98.464-81.528c10.602,0 19.541,7.25 22.127,17.051-5.886-1.723-11.348-2.661-16.02-2.661l-12.216,.001c-4.672,0-10.133,0.938-16.019,2.661 2.586-9.802 11.526-17.052 22.128-17.052zm21.517,94.241h-43.034l21.518-52.555 21.516,52.555zm-84.875,24.855c-3.016,0-5.974-0.592-8.793-1.759-11.724-4.856-17.311-18.345-12.455-30.068 10.062-24.291 36.026-43.406 57.037-52.348 0.341-0.115 0.672-0.248 0.986-0.407 5.579-2.307 10.785-3.89 15.208-4.632l-28.217,68.921c-0.008,0.018-0.016,0.036-0.022,0.054l-2.468,6.027c-1.387,3.347-3.497,6.227-6.099,8.509-0.101,0.079-0.197,0.162-0.293,0.245-4.069,3.45-9.293,5.457-14.884,5.458zm63.358,22.078c-14.55,0-27.627-7.844-34.513-20.336 2.575-3.007 4.724-6.438 6.3-10.242l.555-1.355h55.316l.566,1.384c1.572,3.794 3.716,7.217 6.287,10.218-6.887,12.489-19.963,20.331-34.511,20.331zm72.152-23.838c-2.819,1.167-5.778,1.759-8.795,1.759-5.617,0-10.865-2.026-14.94-5.502-0.068-0.058-0.136-0.117-0.206-0.172-2.612-2.281-4.73-5.162-6.117-8.51l-2.477-6.049c-0.009-0.022-0.018-0.044-0.027-0.066l-28.218-68.923c4.429,0.74 9.648,2.328 15.245,4.645 0.289,0.145 0.593,0.266 0.904,0.373 21.006,8.931 47.013,28.06 57.085,52.377 4.856,11.724-0.731,25.212-12.454,30.068z"></path> <path d="m175.408,183.757c-2.93-2.929-7.678-2.929-10.607,0-2.929,2.929-2.929,7.678 0,10.606l16.592,16.592c1.465,1.464 3.385,2.197 5.304,2.197 1.919,0 3.839-0.732 5.304-2.197 2.929-2.929 2.929-7.678 0-10.606l-16.593-16.592z"></path> <path d="m120.323,202.182c-4.143,0-7.5,3.358-7.5,7.5v23.464c0,4.142 3.357,7.5 7.5,7.5s7.5-3.358 7.5-7.5v-23.464c0-4.142-3.357-7.5-7.5-7.5z"></path> <path d="m65.239,183.758l-16.591,16.591c-2.929,2.929-2.929,7.678 0,10.606 1.465,1.464 3.385,2.197 5.304,2.197 1.919,0 3.839-0.732 5.304-2.197l16.591-16.591c2.929-2.929 2.929-7.678 0-10.606-2.93-2.929-7.678-2.929-10.608,0z"></path> </g> </g></svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-swamp-900">{{.User.DisplayName}}</h4>
+                            <p class="mt-2 text-swamp-700">
+                                {{.ContentHTML}}
+                                <span class="block text-sm mt-1 text-swamp-500">{{if .Event.Location}}{{.Event.Location}}{{end}}{{if .Event.HostOrg}} &middot; Hosted by {{.Event.HostOrg}}{{end}}</span>
+                            </p>
+                            <div class="mt-4 flex items-center space-x-4">
+                                <button class="bg-swamp-500 text-white px-4 py-2 rounded-full text-sm hover:bg-swamp-600">
+                                    RSVP ({{.Event.RSVPCount}} going)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{else}}
+                <!-- Post Card -->
+                <div class="bg-white shadow-sm p-6" data-post-id="{{.PostID}}">
+                    <div class="flex items-start space-x-3">
+                        <img src="{{avatar .User.AvatarURL}}" alt="{{.User.DisplayName}}" class="w-16 h-16 rounded-full">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2">
+								<h4 class="font-semibold text-swamp-900">{{.User.DisplayName}}</h4>
+								<a href="{{$.BasePath}}/profile/{{.User.Username}}"  class="text-sm text-swamp-500 hover:text-swamp-700">@{{.User.Username}}</a>
+								<span class="text-swamp-500">&middot;</span>
+								<a href="#" class="text-sm text-swamp-500 hover:text-swamp-700">{{.TimeLabel}}</a>
+                            </div>
+                            <p class="mt-2 text-swamp-700">
+                                {{.ContentHTML}}
+                            </p>
+                            {{if .MediaURL}}
+                            <div class="mt-4 overflow-hidden rounded-2xl border border-swamp-200 bg-swamp-50">
+                                {{if eq .MediaType "image"}}<img src="{{.MediaURL}}" alt="{{if .AltText}}{{.AltText}}{{else}}{{.Content}}{{end}}" class="w-full max-h-[640px] object-cover">
+                                {{else if eq .MediaType "video"}}<video controls class="w-full max-h-[640px]"><source src="{{.MediaURL}}" type="video/mp4"></video>{{end}}
+                            </div>
+                            {{end}}
+                            <div class="mt-4 flex items-center space-x-6 text-swamp-500">
+                                <a href="{{.Nav.Post}}" class="flex items-center space-x-2 hover:text-swamp-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                    </svg>
+                                    <span>{{if .InteractionCount}}{{.InteractionCount}} Answers{{else}}View{{end}}</span>
+                                </a>
+								<button class="interact-btn flex items-center space-x-2 hover:text-swamp-600" data-post-id="{{.PostID}}" data-action="reribb">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+									</svg>
+                                    <span class="reribb-count">{{.ReribbCount}} Reribbs</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{end}}
+                {{else}}
+                <div class="bg-white shadow-sm p-6 text-center text-swamp-500">No posts yet. Be the first to share something!</div>
+                {{end}}
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="lg:col-span-1 bg-white order-2 lg:order-4">
+			    <!-- Search-->
+                <div class="p-6 pb-0">
+					<div class="relative">
+						<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+							<svg class="w-5 h-5 text-swamp-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+							</svg>
+						</div>
+						<input 
+							type="text" 
+							placeholder="Search" 
+							class="w-full pl-10 pr-4 py-2 bg-swamp-100 rounded-full border-none focus:ring-2 
+                            focus:ring-swamp-400 focus-visible:ring-swamp-400 placeholder:text-swamp-600"
+						>
+					</div>
+				</div>
+                <!-- Trending Ponds -->
+                <div class="p-6 pb-0">
+                    <h3 class="text-lg font-semibold text-swamp-900 mb-4">Trending Ponds</h3>
+                    <ul class="space-y-4">
+                        {{range .Trending}}
+                        <li>
+                            <a href="{{.URL}}" class="flex items-center space-x-3 group">
+                                <div class="w-8 h-8 bg-swamp-100 rounded-lg flex items-center justify-center">
+                                    <svg  class="text-swamp-600" fill="currentColor" height="48px" width="48px"  viewBox="-122.88 -122.88 757.76 757.76" xml:space="preserve" stroke="currentColor" stroke-width="0.00512"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="2.048"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M452.09,335.122c62.386-69.965,60.006-177.603,59.867-182.309c-0.255-8.712-7.161-15.767-15.864-16.21 c-2.307-0.116-34.685-1.557-74.997,6.427c-7.934-39.686-21.397-68.089-22.046-69.442c-3.695-7.715-12.621-11.393-20.681-8.529 c-1.409,0.502-30.793,11.089-64.301,33.391c-22.136-33.013-45.055-53.88-46.902-55.536c-6.353-5.7-15.98-5.7-22.333,0 c-1.847,1.658-24.767,22.523-46.902,55.536c-33.507-22.302-62.891-32.891-64.3-33.392c-8.061-2.866-16.983,0.815-20.681,8.529 c-0.649,1.353-14.111,29.756-22.046,69.442c-40.312-7.986-72.689-6.543-74.996-6.426c-8.706,0.441-15.61,7.497-15.865,16.21 c-0.138,4.706-2.518,112.345,59.867,182.309c-25.548,10.116-54.712,27.242-54.712,54.639c0,26.751,27.147,48.071,80.688,63.368 c45.665,13.047,106.079,20.232,170.114,20.232c64.035,0,124.449-7.185,170.114-20.232c53.54-15.297,80.688-36.617,80.688-63.368 C506.802,362.378,477.675,345.252,452.09,335.122z M478.058,170.096c-1.946,31.969-11.425,103.617-56.537,148.728 c-36.2,36.199-89.566,48.414-125.646,52.438c39.064-48.084,66.363-107.116,59.272-168.736 C398.199,176.455,451.645,171.071,478.058,170.096z M374.92,102.738c4.236,11.349,9.815,28.472,13.716,48.559 c-13.576,4.293-27.37,9.806-40.69,16.88c-4.406-14.561-10.245-28.283-16.784-40.922 C348.028,115.898,363.966,107.764,374.92,102.738z M256.021,79.056c35.584,38.182,66.859,90.846,66.859,143.503 c0,63.89-45.323,120.279-66.902,143.503c-21.587-23.163-66.859-79.39-66.859-143.503C189.12,170.1,220.169,117.642,256.021,79.056 z M137.081,102.738c10.957,5.028,26.895,13.161,43.758,24.516c-6.539,12.639-12.377,26.362-16.784,40.922 c-13.319-7.074-27.113-12.587-40.689-16.88C127.267,131.207,132.847,114.083,137.081,102.738z M33.942,170.07 c26.377,0.94,79.734,6.278,122.913,32.453c-7.089,61.584,20.174,120.616,59.271,168.739 c-36.08-4.024-89.446-16.237-125.645-52.438C45.355,273.698,35.883,202.016,33.942,170.07z M416.928,420.976 c-42.759,12.217-99.912,18.946-160.927,18.946c-61.015,0-118.167-6.728-160.928-18.946 c-46.066-13.162-56.434-27.299-56.434-31.214c0-3.733,9.353-16.619,49.518-29.148c45.956,33.345,113.973,48.174,167.843,45.886 c53.029,2.254,121.345-12.148,167.843-45.886c40.165,12.529,49.518,25.415,49.518,29.148 C473.362,393.676,462.995,407.814,416.928,420.976z"></path> </g> </g> </g></svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-swamp-900 group-hover:text-swamp-600">#{{.TagName}}</h4>
+                                    <p class="text-sm text-swamp-500">{{.RecentPosts}} posts</p>
+                                </div>
+                            </a>
+                        </li>
+                        {{else}}
+                        <li><p class="text-sm text-swamp-500">No trending topics yet.</p></li>
+                        {{end}}
+                    </ul>
+                </div>
+
+                <!-- Upcoming Fireflies -->
+                <div class="p-6 pb-0">
+                    <h3 class="text-lg font-semibold text-swamp-900 mb-4">Upcoming Fireflies</h3>
+                    <div class="space-y-4">
+                        {{range .Items}}
+                        {{if .IsEvent}}
+                        <div class="flex items-start space-x-3">
+                            <div class="w-12 flex-shrink-0 text-center">
+                                <div class="text-sm font-semibold text-swamp-600">{{monthAbbr .Event.EventTime}}</div>
+                                <div class="text-2xl font-bold text-swamp-900">{{dayNum .Event.EventTime}}</div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-swamp-900">{{.User.DisplayName}}</h4>
+                                <p class="text-sm text-swamp-500">{{.Event.Location}}{{if .Event.HostOrg}} &middot; {{.Event.HostOrg}}{{end}}</p>
+                            </div>
+                        </div>
+                        {{end}}
+                        {{end}}
+                    </div>
+                </div>
+				
+                
+                <div class="p-6">                  
+                    <div class="flex items-start space-x-2 text-swamp-600">
+                        <a href="/contact" class="hover:text-swamp-800">Contact</a>
+                        <span>&bull;</span>
+                        <a href="/privacy" class="hover:text-swamp-800">Privacy</a>
+                        <span>&bull;</span>
+                        <a href="/tos" class="hover:text-swamp-800">Terms</a>
+                    </div>
+                </div>
+                </div>
+            </div>
         </div>
-      </article>
-      {{else}}
-      <div class="rounded-2xl bg-white p-6 shadow-sm border border-swamp-100 text-center"><div class="text-swamp-500">No posts yet. Be the first to share something!</div></div>
-      {{end}}
-    </main>
+    </div>
 
-    <aside class="space-y-4 lg:col-span-1">
-      <div class="rounded-2xl bg-white p-5 shadow-sm border border-swamp-100">
-        <div class="font-semibold">Trending Tags</div>
-        <div class="mt-3 space-y-2">
-          {{range .Trending}}<a href="{{.URL}}" class="inline-block rounded-full bg-swamp-100 px-3 py-1 text-sm text-swamp-700 hover:bg-swamp-200">#{{.TagName}}</a>
-          {{else}}<div class="text-sm text-swamp-500">No trending topics yet.</div>{{end}}
-        </div>
-      </div>
-    </aside>
-  </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('create-post-form');
+    var textarea = document.getElementById('post-content');
+    var submitBtn = document.getElementById('post-submit-btn');
+    var charCount = document.getElementById('char-count');
+    var mediaFile = document.getElementById('media-file');
+    var mediaPreview = document.getElementById('media-preview');
+    var mediaPreviewImg = document.getElementById('media-preview-img');
+    var mediaRemoveBtn = document.getElementById('media-remove-btn');
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var form = document.getElementById('create-post-form');
-      var textarea = document.getElementById('post-content');
-      var submitBtn = document.getElementById('post-submit-btn');
-      var charCount = document.getElementById('char-count');
-      var mediaFile = document.getElementById('media-file');
-      var mediaPreview = document.getElementById('media-preview');
-      var mediaPreviewImg = document.getElementById('media-preview-img');
-      var mediaRemoveBtn = document.getElementById('media-remove-btn');
-
-      if (form && textarea && submitBtn && charCount) {
+    if (form && textarea && submitBtn && charCount) {
         function updateUI() {
-          var len = textarea.value.trim().length;
-          charCount.textContent = len + '/500';
-          submitBtn.disabled = len === 0 || len > 500;
+            var len = textarea.value.trim().length;
+            charCount.textContent = len + '/500';
+            submitBtn.disabled = len === 0 || len > 500;
         }
         textarea.addEventListener('input', updateUI);
         updateUI();
 
-        // Media preview
         if (mediaFile && mediaPreview && mediaPreviewImg && mediaRemoveBtn) {
-          mediaFile.addEventListener('change', function() {
-            var file = this.files[0];
-            if (file) {
-              var reader = new FileReader();
-              reader.onload = function(e) {
-                mediaPreviewImg.src = e.target.result;
-                mediaPreview.classList.remove('hidden');
-              };
-              reader.readAsDataURL(file);
-            }
-          });
-          mediaRemoveBtn.addEventListener('click', function() {
-            mediaFile.value = '';
-            mediaPreview.classList.add('hidden');
-            mediaPreviewImg.src = '';
-          });
+            mediaFile.addEventListener('change', function() {
+                var file = this.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        mediaPreviewImg.src = e.target.result;
+                        mediaPreview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            mediaRemoveBtn.addEventListener('click', function() {
+                mediaFile.value = '';
+                mediaPreview.classList.add('hidden');
+                mediaPreviewImg.src = '';
+            });
         }
 
         form.addEventListener('submit', function(e) {
-          e.preventDefault();
-          var content = textarea.value.trim();
-          if (!content) return;
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Posting...';
-          var bp = '{{.BasePath}}';
-          var csrf = document.getElementById('csrf-token').value;
+            e.preventDefault();
+            var content = textarea.value.trim();
+            if (!content) return;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Posting...';
+            var bp = '{{.BasePath}}';
+            var csrf = document.getElementById('csrf-token').value;
 
-          var fd = new FormData();
-          fd.append('content', content);
-          fd.append('gorilla.csrf.Token', csrf);
-          if (mediaFile && mediaFile.files[0]) {
-            fd.append('media', mediaFile.files[0]);
-          }
+            var fd = new FormData();
+            fd.append('content', content);
+            fd.append('gorilla.csrf.Token', csrf);
+            if (mediaFile && mediaFile.files[0]) {
+                fd.append('media', mediaFile.files[0]);
+            }
 
-          fetch(bp + '/api/create', {
-            method: 'POST',
-            headers: { 'X-CSRF-Token': csrf },
-            body: fd
-          }).then(function(r) { return r.text(); })
-            .then(function(t) {
-              var r = JSON.parse(t);
-              if (r.success) {
-                textarea.value = '';
-                if (mediaFile) mediaFile.value = '';
-                if (mediaPreview) mediaPreview.classList.add('hidden');
-                updateUI();
-                showMsg('Post created!', 'success');
-                setTimeout(function() { location.reload(); }, 800);
-              } else { showMsg(r.error || 'Error', 'error'); }
-            }).catch(function() { showMsg('Network error', 'error'); })
-            .finally(function() { submitBtn.disabled = false; submitBtn.textContent = 'Ribbit'; });
+            fetch(bp + '/api/create', {
+                method: 'POST',
+                headers: { 'X-CSRF-Token': csrf },
+                body: fd
+            }).then(function(r) { return r.text(); })
+                .then(function(t) {
+                    var r = JSON.parse(t);
+                    if (r.success) {
+                        textarea.value = '';
+                        if (mediaFile) mediaFile.value = '';
+                        if (mediaPreview) mediaPreview.classList.add('hidden');
+                        updateUI();
+                        showMsg('Post created!', 'success');
+                        setTimeout(function() { location.reload(); }, 800);
+                    } else { showMsg(r.error || 'Error', 'error'); }
+                }).catch(function() { showMsg('Network error', 'error'); })
+                .finally(function() { submitBtn.disabled = false; submitBtn.textContent = 'Ribbit'; });
         });
-      }
+    }
 
-      document.querySelectorAll('.interact-btn').forEach(function(btn) {
+    document.querySelectorAll('.interact-btn').forEach(function(btn) {
         btn.addEventListener('click', function() {
-          var postId = this.dataset.postId;
-          var action = this.dataset.action;
-          var isLike = action === 'like';
-          if (!postId) return;
-          var countSpan = this.querySelector(isLike ? '.like-count' : '.reribb-count');
-          var svgIcon = this.querySelector('svg');
-          var cur = parseInt(countSpan.textContent) || 0;
-          var wasActive = isLike ? this.classList.contains('text-red-500') : false;
+            var postId = this.dataset.postId;
+            var action = this.dataset.action;
+            if (!postId) return;
+            var countSpan = this.querySelector('.reribb-count');
+            var curText = countSpan.textContent;
+            var cur = parseInt(curText) || 0;
+            countSpan.textContent = (cur + 1) + ' Reribbs';
+            btn.disabled = true;
 
-          if (isLike) { this.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', this.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
-          countSpan.textContent = wasActive ? Math.max(0, cur - 1) : cur + 1;
-          btn.disabled = true;
-
-          var bp = '{{.BasePath}}';
-          var csrf = document.getElementById('csrf-token');
-          fetch(bp + '/api/interact', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf ? csrf.value : '' },
-            body: JSON.stringify({ post_id: parseInt(postId), type: action })
-          }).then(function(r) { return r.json(); })
-            .then(function(r) {
-              if (r.success) {
-                countSpan.textContent = r.count;
-                if (isLike) {
-                  if (r.created) { btn.classList.add('text-red-500'); svgIcon.setAttribute('fill', 'currentColor'); }
-                  else { btn.classList.remove('text-red-500'); svgIcon.setAttribute('fill', 'none'); }
-                }
-              } else {
-                if (isLike) { btn.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', btn.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
-                countSpan.textContent = cur;
-              }
-            }).catch(function() {
-              if (isLike) { btn.classList.toggle('text-red-500'); svgIcon.setAttribute('fill', btn.classList.contains('text-red-500') ? 'currentColor' : 'none'); }
-              countSpan.textContent = cur;
-            }).finally(function() { btn.disabled = false; });
+            var bp = '{{.BasePath}}';
+            var csrf = document.getElementById('csrf-token');
+            fetch(bp + '/api/interact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf ? csrf.value : '' },
+                body: JSON.stringify({ post_id: parseInt(postId), type: action })
+            }).then(function(r) { return r.json(); })
+                .then(function(r) {
+                    if (r.success) { countSpan.textContent = r.count + ' Reribbs'; }
+                    else { countSpan.textContent = cur + ' Reribbs'; }
+                }).catch(function() { countSpan.textContent = cur + ' Reribbs'; })
+                .finally(function() { btn.disabled = false; });
         });
-      });
+    });
 
-      function showMsg(m, t) {
+    function showMsg(m, t) {
         var ex = document.querySelector('.message-notification');
         if (ex) ex.remove();
         var d = document.createElement('div');
@@ -283,9 +368,9 @@
         d.textContent = m;
         document.body.appendChild(d);
         setTimeout(function() { if (d.parentNode) d.remove(); }, 3000);
-      }
-    });
-  </script>
+    }
+});
+</script>
 </body>
 </html>
 {{end}}

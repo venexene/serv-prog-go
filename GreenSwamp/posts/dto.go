@@ -142,7 +142,7 @@ func renderContentHTML(content, basePath string) template.HTML {
 		out.WriteString(escaped[last:prefixEnd])
 
 		href := basePath + "/ponds/" + strings.ToLower(tag)
-		out.WriteString(`<a href="` + href + `" class="font-semibold text-emerald-700 hover:text-emerald-800">#` + tag + `</a>`)
+		out.WriteString(`<a href="` + href + `" class="text-swamp-700 hover:text-swamp-500">#` + tag + `</a>`)
 
 		last = idx[1]
 	}
@@ -197,4 +197,16 @@ func randomString(n int) string {
 
 func formatTime(t interface{ Format(string) string }) string {
 	return t.Format("02 Jan 2006 15:04")
+}
+
+func shortDate(t interface{ Format(string) string }) string {
+	return t.Format("Jan 2")
+}
+
+func monthAbbr(t interface{ Format(string) string }) string {
+	return t.Format("Jan")
+}
+
+func dayNum(t interface{ Format(string) string }) string {
+	return t.Format("2")
 }

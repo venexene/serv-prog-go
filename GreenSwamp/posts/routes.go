@@ -45,10 +45,13 @@ func RegisterRoutes(mux *http.ServeMux, db *gorm.DB, logger *log.Logger, cfg Con
 
 func mustTemplates(dir string) *template.Template {
 	funcMap := template.FuncMap{
-		"avatar":       avatarOrFallback,
-		"bio":          bioOrEmpty,
-		"mediaKind":    mediaKind,
-		"formatTime":   formatTime,
+		"avatar":        avatarOrFallback,
+		"bio":           bioOrEmpty,
+		"mediaKind":     mediaKind,
+		"formatTime":    formatTime,
+		"shortDate":     shortDate,
+		"monthAbbr":     monthAbbr,
+		"dayNum":        dayNum,
 		"uintToString":  uintToString,
 	}
 
