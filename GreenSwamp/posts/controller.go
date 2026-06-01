@@ -402,7 +402,6 @@ func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Accept up to 10 MB of multipart form data
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -424,13 +423,11 @@ func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		defer file.Close()
 
-		// Determine media type from MIME
 		mime := header.Header.Get("Content-Type")
 		if strings.HasPrefix(mime, "image/") {
 			mt := "image"
 			mediaType = &mt
 
-			// Save file to static/uploads/
 			uploadDir := "static/uploads"
 			if err := os.MkdirAll(uploadDir, 0755); err != nil {
 				c.logger.Printf("create upload dir: %v", err)
@@ -463,7 +460,6 @@ func (c *Controller) handleCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update post with media info if file was uploaded
 	if mediaURL != nil {
 		c.repo.UpdatePostMedia(r.Context(), post.PostID, mediaURL, mediaType, altText)
 	}

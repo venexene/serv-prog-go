@@ -116,11 +116,9 @@
         </div>
       </article>
 
-      <!-- Comments Section -->
       <div class="mt-6 rounded-2xl border border-swamp-100 bg-white p-6 shadow-sm">
         <h3 class="font-semibold text-lg text-swamp-900 mb-4">Answers</h3>
 
-        <!-- Comment Form (auth only) -->
         <form id="comment-form" class="mb-6 flex gap-3">
           <input type="hidden" id="csrf-token-comment" value="{{.CSRFToken}}">
           <img src="/static/avatars/avatar.jpeg" alt="You" class="h-10 w-10 rounded-2xl object-cover flex-shrink-0">
@@ -136,7 +134,6 @@
           </div>
         </form>
 
-        <!-- Comments List -->
         <div id="comments-list" class="space-y-4">
           {{range .Comments}}
           <div class="flex gap-3 border-b border-swamp-50 pb-4 last:border-0 last:pb-0">

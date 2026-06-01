@@ -245,7 +245,6 @@ func (r *Repository) CreatePost(ctx context.Context, userID uint, content string
 	return post, nil
 }
 
-// UpdatePostMedia sets media fields on an existing post.
 func (r *Repository) UpdatePostMedia(ctx context.Context, postID uint, mediaURL, mediaType, altText *string) error {
 	return r.db.WithContext(ctx).
 		Model(&Post{}).
@@ -257,8 +256,6 @@ func (r *Repository) UpdatePostMedia(ctx context.Context, postID uint, mediaURL,
 		}).Error
 }
 
-// ToggleInteraction creates or removes a like/reribb for a post.
-// Returns: created (true if added, false if removed), new count, error.
 func (r *Repository) ToggleInteraction(ctx context.Context, userID, postID uint, interactionType string) (created bool, count int64, err error) {
 	var existing Interaction
 	err = r.db.WithContext(ctx).
@@ -290,7 +287,6 @@ func (r *Repository) ToggleInteraction(ctx context.Context, userID, postID uint,
 	return true, count, err
 }
 
-// GetUserInteractions returns a map of postID -> list of interaction types for the given user.
 func (r *Repository) GetUserInteractions(ctx context.Context, userID uint, postIDs []uint) (map[uint][]string, error) {
 	if len(postIDs) == 0 {
 		return nil, nil
@@ -310,7 +306,6 @@ func (r *Repository) GetUserInteractions(ctx context.Context, userID uint, postI
 	return result, nil
 }
 
-// CountByType returns the number of interactions of a specific type for a post.
 func (r *Repository) CountByType(ctx context.Context, postID uint, interactionType string) (int64, error) {
 	var count int64
 	if err := r.db.WithContext(ctx).
@@ -322,7 +317,6 @@ func (r *Repository) CountByType(ctx context.Context, postID uint, interactionTy
 	return count, nil
 }
 
-// CreateComment adds a comment interaction with content. Unlike likes/reribbs, comments are always additive.
 func (r *Repository) CreateComment(ctx context.Context, userID, postID uint, content string) (*Interaction, error) {
 	comment := &Interaction{
 		UserID:          userID,
@@ -336,7 +330,6 @@ func (r *Repository) CreateComment(ctx context.Context, userID, postID uint, con
 	return comment, nil
 }
 
-// ListCommentsByPost returns all comments for a post, newest first, with user info.
 func (r *Repository) ListCommentsByPost(ctx context.Context, postID uint) ([]Interaction, error) {
 	var comments []Interaction
 	if err := r.db.WithContext(ctx).
@@ -348,7 +341,6 @@ func (r *Repository) ListCommentsByPost(ctx context.Context, postID uint) ([]Int
 	return comments, nil
 }
 
-// GetUserByID returns a user by their ID (for comment author display).
 func (r *Repository) GetUserByID(ctx context.Context, userID uint) (*User, error) {
 	var u User
 	if err := r.db.WithContext(ctx).First(&u, "user_id = ?", userID).Error; err != nil {
@@ -367,7 +359,6 @@ func ensureTrendingView(db *gorm.DB) error {
 	WHERE p.created_at > datetime('now', '-7 days')
 	GROUP BY t.tag_id, t.tag_name
 	`
-	// Drop old 1-day view if it exists from a previous migration
 	db.Exec("DROP VIEW IF EXISTS trending_ponds")
 	return db.Exec(q).Error
 }

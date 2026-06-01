@@ -58,11 +58,11 @@ type ProfilePageData struct {
 }
 
 type PostPageData struct {
-	Title    string
-	BasePath string
-	Item     FeedItem
-	Trending []TrendingPond
-	Comments []CommentItem
+	Title     string
+	BasePath  string
+	Item      FeedItem
+	Trending  []TrendingPond
+	Comments  []CommentItem
 	CSRFToken string
 }
 
@@ -78,9 +78,9 @@ type CommentRequest struct {
 
 type CommentItem struct {
 	Interaction
-	AuthorName    string `json:"author_name"`
-	AuthorAvatar  string `json:"author_avatar"`
-	TimeLabel     string `json:"time_label"`
+	AuthorName   string `json:"author_name"`
+	AuthorAvatar string `json:"author_avatar"`
+	TimeLabel    string `json:"time_label"`
 }
 
 var hashtagRe = regexp.MustCompile(`(^|[^[:alnum:]_])#([[:alnum:]_]+)`)

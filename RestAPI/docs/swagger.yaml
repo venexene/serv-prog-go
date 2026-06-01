@@ -1,0 +1,825 @@
+basePath: /
+definitions:
+  core.TokenPair:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+      token_type:
+        type: string
+    type: object
+  schema.AuthorResp:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  schema.CreateAuthorReq:
+    properties:
+      name:
+        maxLength: 400
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  schema.CreateCustomerReq:
+    properties:
+      email:
+        maxLength: 350
+        type: string
+      first_name:
+        maxLength: 200
+        minLength: 1
+        type: string
+      last_name:
+        maxLength: 200
+        minLength: 1
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    type: object
+  schema.CreateGameReq:
+    properties:
+      author_ids:
+        items:
+          type: integer
+        type: array
+      genre:
+        type: string
+      num_players:
+        type: integer
+      platform:
+        type: string
+      publisher_id:
+        type: integer
+      release_date:
+        type: string
+      title:
+        maxLength: 400
+        minLength: 1
+        type: string
+    required:
+    - title
+    type: object
+  schema.CustomerResp:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      last_name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  schema.ErrResp:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  schema.GameResp:
+    properties:
+      authors:
+        items:
+          $ref: '#/definitions/schema.AuthorResp'
+        type: array
+      created_at:
+        type: string
+      genre:
+        type: string
+      id:
+        type: integer
+      num_players:
+        type: integer
+      platform:
+        type: string
+      publisher_id:
+        type: integer
+      release_date:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  schema.LoginReq:
+    properties:
+      password:
+        maxLength: 100
+        minLength: 3
+        type: string
+      username:
+        maxLength: 100
+        minLength: 3
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  schema.OrderLineResp:
+    properties:
+      game:
+        $ref: '#/definitions/schema.GameResp'
+      game_id:
+        type: integer
+      id:
+        type: integer
+      order_id:
+        type: integer
+      price:
+        type: number
+    type: object
+  schema.OrderResp:
+    properties:
+      created_at:
+        type: string
+      customer_id:
+        type: integer
+      dest_address_id:
+        type: integer
+      id:
+        type: integer
+      order_date:
+        type: string
+      order_lines:
+        items:
+          $ref: '#/definitions/schema.OrderLineResp'
+        type: array
+      shipping_method_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  schema.PagedResp:
+    properties:
+      data: {}
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  schema.RegisterReq:
+    properties:
+      password:
+        maxLength: 100
+        minLength: 6
+        type: string
+      username:
+        maxLength: 100
+        minLength: 3
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  schema.TokenResp:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_token:
+        type: string
+      token_type:
+        type: string
+    type: object
+  schema.UpdateAuthorReq:
+    properties:
+      name:
+        maxLength: 400
+        minLength: 1
+        type: string
+    required:
+    - name
+    type: object
+  schema.UpdateCustomerReq:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+    type: object
+  schema.UpdateGameReq:
+    properties:
+      author_ids:
+        items:
+          type: integer
+        type: array
+      genre:
+        type: string
+      num_players:
+        type: integer
+      platform:
+        type: string
+      publisher_id:
+        type: integer
+      release_date:
+        type: string
+      title:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    name: GitHub
+    url: https://github.com/cherevatovm/serv-prog-mag
+  description: |-
+    REST API for game store with JWT auth.
+    CRUD for Authors, Games, Customers.
+
+    ## Auth
+    POST /api/v1/auth/login or /api/v1/auth/register
+    Header: `Authorization: Bearer <token>`
+
+    ## Cascade
+    - Author → game_author (games stay)
+    - Game → game_author + order_line
+    - Customer → cust_order + order_line + order_history + customer_address
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Gravity Game Store API
+  version: "2.0"
+paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate and get JWT tokens
+      parameters:
+      - description: Login credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/schema.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.TokenPair'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      summary: Login
+      tags:
+      - auth
+  /api/v1/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: Registration data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/schema.RegisterReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/schema.TokenResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      summary: Register
+      tags:
+      - auth
+  /api/v1/authors:
+    get:
+      description: Paginated list of all authors
+      parameters:
+      - default: 1
+        description: Page
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.PagedResp'
+      summary: List authors
+      tags:
+      - authors
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: data
+        in: body
+        name: author
+        required: true
+        schema:
+          $ref: '#/definitions/schema.CreateAuthorReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/schema.AuthorResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      security:
+      - BearerAuth: []
+      summary: Create author
+      tags:
+      - authors
+  /api/v1/authors/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      security:
+      - BearerAuth: []
+      summary: Delete author
+      tags:
+      - authors
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.AuthorResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      summary: Get author
+      tags:
+      - authors
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: data
+        in: body
+        name: author
+        required: true
+        schema:
+          $ref: '#/definitions/schema.UpdateAuthorReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.AuthorResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      security:
+      - BearerAuth: []
+      summary: Update author
+      tags:
+      - authors
+  /api/v1/authors/{id}/games:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schema.GameResp'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      summary: Author games
+      tags:
+      - authors
+  /api/v1/customers:
+    get:
+      description: Paginated list of customers
+      parameters:
+      - default: 1
+        description: Page
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.PagedResp'
+      summary: List customers
+      tags:
+      - customers
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: data
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/schema.CreateCustomerReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/schema.CustomerResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      security:
+      - BearerAuth: []
+      summary: Create customer
+      tags:
+      - customers
+  /api/v1/customers/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      security:
+      - BearerAuth: []
+      summary: Delete customer
+      tags:
+      - customers
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.CustomerResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      summary: Get customer
+      tags:
+      - customers
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: data
+        in: body
+        name: customer
+        required: true
+        schema:
+          $ref: '#/definitions/schema.UpdateCustomerReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.CustomerResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      security:
+      - BearerAuth: []
+      summary: Update customer
+      tags:
+      - customers
+  /api/v1/customers/{id}/orders:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schema.OrderResp'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      summary: Customer orders
+      tags:
+      - customers
+  /api/v1/games:
+    get:
+      description: Paginated list of games with authors
+      parameters:
+      - default: 1
+        description: Page
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.PagedResp'
+      summary: List games
+      tags:
+      - games
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: data
+        in: body
+        name: game
+        required: true
+        schema:
+          $ref: '#/definitions/schema.CreateGameReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/schema.GameResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      security:
+      - BearerAuth: []
+      summary: Create game
+      tags:
+      - games
+  /api/v1/games/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      security:
+      - BearerAuth: []
+      summary: Delete game
+      tags:
+      - games
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.GameResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      summary: Get game
+      tags:
+      - games
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: data
+        in: body
+        name: game
+        required: true
+        schema:
+          $ref: '#/definitions/schema.UpdateGameReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/schema.GameResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      security:
+      - BearerAuth: []
+      summary: Update game
+      tags:
+      - games
+  /api/v1/games/{id}/authors:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schema.AuthorResp'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schema.ErrResp'
+      summary: Game authors
+      tags:
+      - games
+securityDefinitions:
+  BearerAuth:
+    description: '"Bearer " + JWT'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

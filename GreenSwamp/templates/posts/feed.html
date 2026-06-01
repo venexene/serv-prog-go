@@ -31,11 +31,8 @@
 </head>
 <body class="bg-swamp-50">
 
-    <!-- Main Feed Container -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!--<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">-->
 		<div class="grid grid-cols-1 lg:grid-cols-4 gap-0 lg:divide-x sm:divide-y lg:h-[calc(100vb-4rem)]">
-            <!-- Left Sidebar -->
             <div class="lg:col-span-1 bg-white order-1">          
                 <div class="p-6 space-y-4"> 
                     <div class="flex items-center space-x-2">
@@ -78,13 +75,10 @@
                    {{end}}
                 </div>		
 
-                <!-- Quick Links -->
             </div>
 
-            <!-- Main Feed -->
             <div class="lg:col-span-2 divide-y order-3">
                 {{if .CurrentUser}}
-                <!-- Post Creation Card -->
                 <div class="bg-white shadow-sm p-6">
                     <div class="flex items-start space-x-3">
                         <img src="/static/avatars/avatar.jpeg" alt="{{.CurrentUser.DisplayName}}" class="w-16 h-16 rounded-full">
@@ -119,7 +113,6 @@
 
                 {{range .Items}}
                 {{if .IsEvent}}
-                <!-- Event Post -->
                 <div class="bg-white shadow-sm p-6 border-l-4 border-l-swamp-400" data-post-id="{{.PostID}}">
                     <div class="flex items-start space-x-3">
                         <div class="w-10 h-10 bg-swamp-100 rounded-full flex items-center justify-center">
@@ -140,7 +133,6 @@
                     </div>
                 </div>
                 {{else}}
-                <!-- Post Card -->
                 <div class="bg-white shadow-sm p-6" data-post-id="{{.PostID}}">
                     <div class="flex items-start space-x-3">
                         <img src="{{avatar .User.AvatarURL}}" alt="{{.User.DisplayName}}" class="w-16 h-16 rounded-full">
